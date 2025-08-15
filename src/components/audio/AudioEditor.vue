@@ -61,7 +61,8 @@
               <span>{{ formatTime(region[1]) }}</span>
             </div>
             <div class="relative">
-              <div id="waveform" class="relative h-[200px]"></div>
+              <div id="waveform" class="relative"></div>
+              <div ref="{timelineRef}" id="wave-timeline" />
               <!-- Cursor time marker -->
               <div
                 v-if="cursorPosition > -1"
@@ -349,6 +350,7 @@ import AudioEditorSliderVolume from "./AudioEditorSliderVolume.vue";
 import WaveSurfer from "wavesurfer.js";
 import RegionsPlugin from "wavesurfer.js/dist/plugins/regions.esm.js";
 import EnvelopePlugin from "wavesurfer.js/dist/plugins/envelope.esm.js";
+import TimelinePlugin from "wavesurfer.js/dist/plugins/timeline.esm.js";
 // @ts-ignore
 import lamejs from "lamejs";
 import MusicTempo from "music-tempo";
@@ -596,11 +598,16 @@ export default defineComponent({
           // barRadius: 3,
           cursorColor: "white",
           cursorWidth: 8,
-          height: 150,
+          height: 100,
           // barGap: s1,
           fillParent: true,
           // plugins: [regionsPlugin.value, envelopePlugin.value],
-          plugins: [regionsPlugin.value],
+          plugins: [
+            regionsPlugin.value,
+            TimelinePlugin.create({
+              container: "#wave-timeline",
+            }),
+          ],
         });
 
         // Listen to ready event before loading
@@ -1448,5 +1455,21 @@ select {
   border-radius: 50%;
   cursor: pointer;
   margin-top: -6px;
+}
+
+#waveform ::part(canvases) {
+  display: flex;
+  align-items: center;
+  height: 200px;
+}
+
+#waveform ::part(region-handle-left),
+#waveform ::part(region-handle-right) {
+}
+
+#waveform ::part(region-handle-left) {
+}
+
+#waveform ::part(region-handle-right) {
 }
 </style>
