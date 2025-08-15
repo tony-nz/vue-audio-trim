@@ -578,7 +578,6 @@ export default defineComponent({
       try {
         // Create a basic AudioContext for EQ settings storage
         // We'll apply these settings during export instead of real-time
-        console.log("Equalizer settings ready for export");
       } catch (error) {
         console.error("Failed to initialize equalizer:", error);
       }
@@ -638,8 +637,6 @@ export default defineComponent({
 
         // Listen to ready event before loading
         wavesurfer.value.on("ready", () => {
-          console.log("WaveSurfer is ready");
-
           // Initialize equalizer filters
           initializeEqualizer();
 
@@ -768,18 +765,10 @@ export default defineComponent({
 
     async function exportAudio() {
       try {
-        console.log("Starting audio export...");
-
         // Create new audio context for processing
         const audioContext = new AudioContext();
         const buffer = await new Response(props.rawAudio).arrayBuffer();
         const decodedData = await audioContext.decodeAudioData(buffer);
-
-        console.log("Original audio:", {
-          duration: decodedData.duration,
-          channels: decodedData.numberOfChannels,
-          sampleRate: decodedData.sampleRate,
-        });
 
         // Calculate the region to export (cutting)
         const startTime = region.value[0];
@@ -787,14 +776,6 @@ export default defineComponent({
         const startSample = Math.floor(startTime * decodedData.sampleRate);
         const endSample = Math.floor(endTime * decodedData.sampleRate);
         const exportLength = endSample - startSample;
-
-        console.log("Export region:", {
-          startTime,
-          endTime,
-          startSample,
-          endSample,
-          exportLength,
-        });
 
         // Create new buffer for the exported audio with speed adjustment
         const speedMultiplier = speed.value / 100;
@@ -804,8 +785,6 @@ export default defineComponent({
           newLength,
           decodedData.sampleRate
         );
-
-        console.log("Processing audio data...");
 
         // Process each channel with chunked processing for better performance
         const chunkSize = 44100; // Process 1 second at a time
@@ -856,19 +835,10 @@ export default defineComponent({
           }
         }
 
-        console.log("Processed audio:", {
-          duration: newBuffer.duration,
-          channels: newBuffer.numberOfChannels,
-          sampleRate: newBuffer.sampleRate,
-          speedMultiplier,
-          volumeMultiplier,
-        });
-
         // Check if any EQ settings are applied
         const hasEqChanges = equalizer.value.some((eq) => eq.value !== 0);
 
         if (hasEqChanges) {
-          console.log("Applying equalizer settings...");
           const offlineContext = new OfflineAudioContext(
             newBuffer.numberOfChannels,
             newBuffer.length,
@@ -902,7 +872,6 @@ export default defineComponent({
           currentNode.connect(offlineContext.destination);
           source.start();
 
-          console.log("Rendering with equalizer...");
           const renderedBuffer = await offlineContext.startRendering();
 
           // Convert to MP3 and trigger download
@@ -918,8 +887,6 @@ export default defineComponent({
     }
 
     async function downloadAsMp3(audioBuffer: AudioBuffer) {
-      console.log("Converting to MP3...");
-
       try {
         // Convert AudioBuffer to MP3
         const mp3Blob = await audioBufferToMp3(audioBuffer);
@@ -936,8 +903,6 @@ export default defineComponent({
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-
-        console.log("Export completed successfully!");
       } catch (error) {
         console.error("MP3 conversion failed:", error);
         alert("MP3 conversion failed. Please try again.");
@@ -945,8 +910,6 @@ export default defineComponent({
     }
 
     async function audioBufferToMp3(buffer: AudioBuffer): Promise<Blob> {
-      console.log("Converting to MP3 format...");
-
       const sampleRate = buffer.sampleRate;
       const numberOfChannels = buffer.numberOfChannels;
       const length = buffer.length;
