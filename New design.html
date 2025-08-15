@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audio Player UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      body {
+        background-color: #1e3a5f;
+      }
+
+      .player-bg {
+        background-color: #2c4a6d;
+      }
+
+      .waveform-container {
+        background-color: #1e3a5f;
+      }
+
+      /* Custom waveform */
+      .waveform {
+        background-image: linear-gradient(to right, #10b981 0%, #10b981 100%);
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 100'%3E%3Cpath d='M0,50 " + "L10,45 L20,30 L30,40 L40,20 L50,35 L60,25 L70,40 L80,30 L90,35 L100,25 L110,40 L120,30 L130,45 L140,35 L150,40 L160,30 L170,35 L180,25 L190,40 L200,30 " + "L210,45 L220,35 L230,40 L240,25 L250,35 L260,30 L270,40 L280,35 L290,30 L300,40 L310,25 L320,35 L330,30 L340,40 L350,35 L360,45 L370,30 L380,40 L390,25 L400,35 " + "L410,30 L420,40 L430,35 L440,45 L450,30 L460,40 L470,25 L480,35 L490,30 L500,40 L510,35 L520,30 L530,40 L540,35 L550,45 L560,30 L570,40 L580,25 L590,35 L600,30 " + "L610,40 L620,35 L630,30 L640,40 L650,35 L660,45 L670,30 L680,40 L690,25 L700,35 L710,30 L720,40 L730,35 L740,30 L750,40 L760,35 L770,45 L780,30 L790,40 L800,25 " + "L810,35 L820,30 L830,40 L840,35 L850,30 L860,40 L870,35 L880,45 L890,30 L900,40 L910,35 L920,45 L930,40 L940,50 L950,55 L960,60 L970,55 L980,50 L990,45 L1000,50 Z' " + "fill='white'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 100'%3E%3Cpath d='M0,50 " + "L10,45 L20,30 L30,40 L40,20 L50,35 L60,25 L70,40 L80,30 L90,35 L100,25 L110,40 L120,30 L130,45 L140,35 L150,40 L160,30 L170,35 L180,25 L190,40 L200,30 " + "L210,45 L220,35 L230,40 L240,25 L250,35 L260,30 L270,40 L280,35 L290,30 L300,40 L310,25 L320,35 L330,30 L340,40 L350,35 L360,45 L370,30 L380,40 L390,25 L400,35 " + "L410,30 L420,40 L430,35 L440,45 L450,30 L460,40 L470,25 L480,35 L490,30 L500,40 L510,35 L520,30 L530,40 L540,35 L550,45 L560,30 L570,40 L580,25 L590,35 L600,30 " + "L610,40 L620,35 L630,30 L640,40 L650,35 L660,45 L670,30 L680,40 L690,25 L700,35 L710,30 L720,40 L730,35 L740,30 L750,40 L760,35 L770,45 L780,30 L790,40 L800,25 " + "L810,35 L820,30 L830,40 L840,35 L850,30 L860,40 L870,35 L880,45 L890,30 L900,40 L910,35 L920,45 L930,40 L940,50 L950,55 L960,60 L970,55 L980,50 L990,45 L1000,50 Z' " + "fill='white'/%3E%3C/svg%3E");
+        -webkit-mask-size: 100% 100%;
+        mask-size: 100% 100%;
+      }
+
+      /* Progress bar styling */
+      input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        background: transparent;
+        cursor: pointer;
+      }
+
+      input[type="range"]::-webkit-slider-track {
+        background: #334155;
+        height: 4px;
+        border-radius: 2px;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        background: white;
+        border-radius: 50%;
+        cursor: pointer;
+        margin-top: -6px;
+      }
+
+      /* Time display styling */
+      .time-display {
+        background-color: rgba(0, 0, 0, 0.3);
+        padding: 2px 8px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="min-h-screen flex items-center justify-center p-4">
+      <div class="player-bg rounded-lg shadow-2xl max-w-5xl w-full">
+        <!-- Header Controls -->
+        <div
+          class="flex items-center justify-between p-4 border-b border-slate-600"
+        >
+          <div class="flex items-center">
+            <button class="text-gray-300 hover:text-white p-2 mr-2">
+              <i class="fas fa-cut"></i>
+            </button>
+            <span class="text-gray-300 text-sm mr-4">Trim</span>
+
+            <button class="text-gray-300 hover:text-white p-2">
+              <i class="fas fa-volume-up"></i>
+            </button>
+            <button class="text-gray-300 hover:text-white p-2">
+              <i class="fas fa-undo"></i>
+            </button>
+            <button class="text-gray-300 hover:text-white p-2">
+              <i class="fas fa-wave-square"></i>
+            </button>
+            <button class="text-gray-300 hover:text-white p-2">
+              <i class="fas fa-sliders-h"></i>
+            </button>
+          </div>
+
+          <div class="flex items-center">
+            <button
+              class="text-gray-300 hover:text-white flex items-center p-2"
+            >
+              <i class="fas fa-undo mr-2"></i>
+              <span>Reset</span>
+            </button>
+            <button class="text-gray-300 hover:text-white p-2 ml-2">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Player Area -->
+        <div class="p-6">
+          <!-- Time display in corner -->
+          <div class="relative mb-4">
+            <div class="time-display text-white text-sm absolute top-0 left-0">
+              00:00.0
+            </div>
+          </div>
+
+          <!-- Track Title -->
+          <div class="text-center text-gray-300 text-sm mb-4 mt-8">
+            Big Tech Is About To Have A Big Problem FLESH SIMULATOR.mp3
+          </div>
+
+          <!-- Waveform Area -->
+          <div class="waveform-container rounded p-4 mb-6">
+            <div class="relative">
+              <div class="flex justify-between text-xs text-gray-400 mb-2">
+                <span>00:00.0</span>
+                <span>09:18.4</span>
+              </div>
+              <div class="relative h-24">
+                <div class="waveform h-full w-full"></div>
+                <!-- Start/End markers -->
+                <div
+                  class="absolute left-0 top-0 bottom-0 w-1 bg-cyan-400"
+                ></div>
+                <div
+                  class="absolute right-0 top-0 bottom-0 w-1 bg-cyan-400"
+                ></div>
+              </div>
+              <div class="text-center text-gray-400 text-sm mt-2">09:18.4</div>
+            </div>
+          </div>
+
+          <!-- Bottom Controls -->
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+              <!-- Play Button -->
+              <button
+                class="bg-slate-700 hover:bg-slate-600 text-white p-3 rounded"
+              >
+                <i class="fas fa-play"></i>
+              </button>
+
+              <!-- Loop/Repeat buttons -->
+              <button class="text-gray-400 hover:text-white p-2">
+                <i class="fas fa-random"></i>
+              </button>
+
+              <!-- Pause indicators -->
+              <button class="text-gray-400 hover:text-white p-2">
+                <i class="fas fa-pause"></i>
+              </button>
+
+              <!-- Time displays -->
+              <div class="flex items-center space-x-4">
+                <span class="time-display text-white text-sm">00:00.0</span>
+                <span class="time-display text-white text-sm">09:18.4</span>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+              <div class="flex items-center text-gray-300">
+                <span class="mr-2">mp3</span>
+                <i class="fas fa-caret-down"></i>
+              </div>
+
+              <button
+                class="bg-white text-slate-800 px-6 py-2 rounded-full font-medium hover:bg-gray-100"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
