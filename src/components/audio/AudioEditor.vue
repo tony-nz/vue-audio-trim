@@ -63,10 +63,36 @@
             <div class="relative">
               <div id="waveform" class="relative"></div>
               <div ref="{timelineRef}" id="wave-timeline" />
+
+              <!-- Dark overlays for excluded areas -->
+              <div
+                v-if="wavesurfer && region"
+                class="absolute top-0 left-0 right-0 bottom-0 pointer-events-none"
+              >
+                <!-- Left overlay (before cut start) -->
+                <div
+                  class="absolute top-0 left-0 bottom-0 bg-black bg-opacity-60 transition-all duration-300"
+                  :style="{
+                    width: getRegionPixelPosition(region[0]) + 'px',
+                  }"
+                ></div>
+
+                <!-- Right overlay (after cut end) -->
+                <div
+                  class="absolute top-0 right-0 bottom-0 bg-black bg-opacity-50 transition-all duration-300"
+                  :style="{
+                    width:
+                      getWaveformWidth() -
+                      getRegionPixelPosition(region[1]) +
+                      'px',
+                  }"
+                ></div>
+              </div>
+
               <!-- Cursor time marker -->
               <div
                 v-if="cursorPosition > -1"
-                class="absolute top-0 pointer-events-none"
+                class="absolute top-0 pointer-events-none z-10"
                 :style="{
                   left: cursorPosition + 'px',
                   transform: 'translateX(-50%)',
@@ -933,21 +959,18 @@ export default defineComponent({
       try {
         // Try different ways to access Mp3Encoder
         if (lamejs && lamejs.Mp3Encoder) {
-          console.log("Using lamejs.Mp3Encoder");
           mp3encoder = new lamejs.Mp3Encoder(
             numberOfChannels,
             sampleRate,
             kbps
           );
         } else if ((window as any).lamejs) {
-          console.log("Using window.lamejs.Mp3Encoder");
           mp3encoder = new (window as any).lamejs.Mp3Encoder(
             numberOfChannels,
             sampleRate,
             kbps
           );
         } else if (lamejs && typeof lamejs === "function") {
-          console.log("lamejs is a function, trying to use it as constructor");
           mp3encoder = new lamejs(numberOfChannels, sampleRate, kbps);
         } else {
           // Fallback: try direct constructor
@@ -955,7 +978,6 @@ export default defineComponent({
             (lamejs as any).Mp3Encoder ||
             (lamejs as any).default?.Mp3Encoder ||
             lamejs;
-          console.log("Using fallback Mp3Encoder:", Mp3Encoder);
           mp3encoder = new Mp3Encoder(numberOfChannels, sampleRate, kbps);
         }
       } catch (e) {
@@ -1003,9 +1025,6 @@ export default defineComponent({
         // Yield control occasionally for large files
         if (i % (sampleBlockSize * 100) === 0) {
           await new Promise((resolve) => setTimeout(resolve, 0));
-          console.log(
-            `MP3 encoding progress: ${Math.round((i / length) * 100)}%`
-          );
         }
       }
 
@@ -1015,7 +1034,6 @@ export default defineComponent({
         mp3Data.push(new Uint8Array(mp3buf).buffer);
       }
 
-      console.log("MP3 conversion completed");
       return new Blob(mp3Data, { type: "audio/mp3" });
     }
 
@@ -1212,6 +1230,20 @@ export default defineComponent({
       }
     }
 
+    function getRegionPixelPosition(time: number): number {
+      if (!wavesurfer.value) return 0;
+      const duration = wavesurfer.value.getDuration();
+      const waveformElement = document.querySelector("#waveform");
+      if (!waveformElement) return 0;
+      const width = waveformElement.clientWidth;
+      return (time / duration) * width;
+    }
+
+    function getWaveformWidth(): number {
+      const waveformElement = document.querySelector("#waveform");
+      return waveformElement ? waveformElement.clientWidth : 0;
+    }
+
     function resetAll() {
       // Reset all settings to defaults
       setVolume(10);
@@ -1302,6 +1334,8 @@ export default defineComponent({
       toggleTrimMode,
       adjustStartTime,
       adjustEndTime,
+      getRegionPixelPosition,
+      getWaveformWidth,
 
       rawAudio: props.rawAudio,
     };
