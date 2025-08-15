@@ -1,11 +1,18 @@
 import { ref, watch } from 'vue';
 
+/**
+ * Interface for equalizer band configuration
+ */
 export interface EqItem {
-  f: number;
-  type: BiquadFilterType;
-  value: number;
+  f: number; // Frequency in Hz
+  type: BiquadFilterType; // Filter type (lowshelf, peaking, highshelf)
+  value: number; // Gain value in dB
 }
 
+/**
+ * Composable for managing all audio effects including volume, speed, equalizer, and fade controls
+ * @returns Object containing effect controls, setters, and utility functions
+ */
 export function useAudioEffects() {
   // Volume controls
   const volume = ref(100);

@@ -1,6 +1,11 @@
 import { ref, watch } from 'vue';
 import EnvelopePlugin from 'wavesurfer.js/dist/plugins/envelope.esm.js';
 
+/**
+ * Composable for managing WaveSurfer EnvelopePlugin to create smooth fade curves
+ * Uses exponential mathematical functions for natural-sounding audio fades
+ * @returns Object containing envelope plugin instance and curve calculation functions
+ */
 export function useEnvelope() {
   const envelopePlugin = ref<any>(null);
 

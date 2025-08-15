@@ -18,13 +18,27 @@
           <span class="text-xl font-bold gradient-text">Vue MP3 Editor</span>
         </div>
         <div class="hidden md:flex space-x-8">
-          <a href="#features" class="hover:text-purple-400 transition"
-            >Features</a
+          <a
+            href="https://github.com/tony-nz/waveedit-pro"
+            target="_blank"
+            class="group transition"
           >
-          <a href="#demo" class="hover:text-purple-400 transition">Demo</a>
-          <a href="#contact" class="hover:text-purple-400 transition"
-            >Contact</a
-          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-6 h-6"
+              viewBox="0 0 1024 1024"
+              fill="#ffffff"
+            >
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M8 0C3.58 0 0 3.58 0 8C0 11.54 2.29 14.53 5.47 15.59C5.87 15.66 6.02 15.42 6.02 15.21C6.02 15.02 6.01 14.39 6.01 13.72C4 14.09 3.48 13.23 3.32 12.78C3.23 12.55 2.84 11.84 2.5 11.65C2.22 11.5 1.82 11.13 2.49 11.12C3.12 11.11 3.57 11.7 3.72 11.94C4.44 13.15 5.59 12.81 6.05 12.6C6.12 12.08 6.33 11.73 6.56 11.53C4.78 11.33 2.92 10.64 2.92 7.58C2.92 6.71 3.23 5.99 3.74 5.43C3.66 5.23 3.38 4.41 3.82 3.31C3.82 3.31 4.49 3.1 6.02 4.13C6.66 3.95 7.34 3.86 8.02 3.86C8.7 3.86 9.38 3.95 10.02 4.13C11.55 3.09 12.22 3.31 12.22 3.31C12.66 4.41 12.38 5.23 12.3 5.43C12.81 5.99 13.12 6.7 13.12 7.58C13.12 10.65 11.25 11.33 9.47 11.53C9.76 11.78 10.01 12.26 10.01 13.01C10.01 14.08 10 14.94 10 15.21C10 15.42 10.15 15.67 10.55 15.59C13.71 14.53 16 11.53 16 8C16 3.58 12.42 0 8 0Z"
+                transform="scale(64)"
+                fill="#ffffff"
+                class="group-hover:fill-purple-400 transition"
+              />
+            </svg>
+          </a>
         </div>
       </div>
     </nav>
@@ -38,41 +52,73 @@
             Made Simple
           </h1>
           <p class="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-            Professional-grade audio editing with an intuitive visual interface.
-            Cut, fade, adjust volume and BPM - all in your browser.
+            Upload your audio file and start editing instantly
+          </p>
+        </div>
+      </div>
+
+      <div
+        class="bg-gray-800 rounded-2xl border border-gray-700 mx-auto max-w-4xl"
+      >
+        <!-- Upload Interface -->
+        <div v-if="!props.rawAudio" class="p-12 text-center">
+          <div class="mb-8">
+            <svg
+              class="w-24 h-24 text-purple-500 mx-auto mb-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+              ></path>
+            </svg>
+            <h3 class="text-2xl font-bold mb-4">Upload Your Audio File</h3>
+            <p class="text-gray-400 mb-8">
+              Supports MP3, WAV, OGG, and more formats
+            </p>
+          </div>
+
+          <CommonUploader
+            accept="audio/*"
+            @set-file="$emit('set-audio', $event)"
+            @set-file-duration="$emit('set-audio-duration', $event)"
+          >
+            <button
+              class="bg-gradient-to-r from-purple-600 to-pink-600 px-12 py-4 rounded-full font-semibold hover-glow transition duration-300 transform hover:scale-105 inline-flex items-center space-x-3"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                ></path>
+              </svg>
+              <span>Upload Audio File</span>
+            </button>
+          </CommonUploader>
+
+          <p class="text-sm text-gray-500 mt-4">
+            No signup required • 100% free to try
           </p>
         </div>
 
-        <!-- Hero Visual -->
-        <div class="relative">
-          <div
-            class="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 blur-3xl"
-          ></div>
-          <div
-            class="relative bg-gray-800 rounded-2xl p-8 border border-gray-700 hover-glow transition duration-300"
-          >
-            <div class="flex justify-between items-center mb-6">
-              <div class="flex space-x-2">
-                <div class="w-3 h-3 bg-red-500 rounded-full"></div>
-                <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-              </div>
-              <span class="text-gray-500 text-sm">WaveEdit Pro v2.0</span>
-            </div>
-            <div
-              class="h-32 bg-gradient-to-r from-purple-600/30 to-pink-600/30 rounded-lg flex items-center justify-center"
-            >
-              <div class="flex space-x-1 h-20">
-                <div class="w-2 bg-purple-500 rounded-full wave-bar"></div>
-                <div class="w-2 bg-purple-400 rounded-full wave-bar"></div>
-                <div class="w-2 bg-purple-500 rounded-full wave-bar"></div>
-                <div class="w-2 bg-purple-400 rounded-full wave-bar"></div>
-                <div class="w-2 bg-purple-500 rounded-full wave-bar"></div>
-                <div class="w-2 bg-purple-400 rounded-full wave-bar"></div>
-                <div class="w-2 bg-purple-500 rounded-full wave-bar"></div>
-              </div>
-            </div>
-          </div>
+        <!-- Audio Editor -->
+        <div v-else class="p-6">
+          <AudioEditor
+            :raw-audio="props.rawAudio"
+            :raw-audio-duration="props.rawAudioDuration"
+            @close="$emit('close')"
+          />
         </div>
       </div>
     </section>
@@ -85,7 +131,7 @@
             Powerful Features
           </h2>
           <p class="text-xl text-gray-400">
-            Everything you need for professional audio editing
+            Everything you need for quick and precise audio editing
           </p>
         </div>
 
@@ -256,126 +302,24 @@
         </div>
       </div>
     </section>
-
-    <!-- Demo Section -->
-    <section id="demo" class="py-20 px-6">
-      <div class="container mx-auto max-w-4xl">
-        <div class="text-center mb-16">
-          <h2 class="text-4xl md:text-5xl font-bold mb-4 gradient-text">
-            Try It Now
-          </h2>
-          <p class="text-xl text-gray-400">
-            Upload your audio file and start editing instantly
-          </p>
-        </div>
-
-        <div class="bg-gray-800 rounded-2xl border border-gray-700">
-          <!-- Upload Interface -->
-          <div v-if="!rawAudio" class="p-12 text-center">
-            <div class="mb-8">
-              <svg
-                class="w-24 h-24 text-purple-500 mx-auto mb-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                ></path>
-              </svg>
-              <h3 class="text-2xl font-bold mb-4">Upload Your Audio File</h3>
-              <p class="text-gray-400 mb-8">
-                Supports MP3, WAV, OGG, and more formats
-              </p>
-            </div>
-
-            <CommonUploader
-              accept="audio/*"
-              @set-file="$emit('set-audio', $event)"
-              @set-file-duration="$emit('set-audio-duration', $event)"
-            >
-              <button
-                class="bg-gradient-to-r from-purple-600 to-pink-600 px-12 py-4 rounded-full font-semibold hover-glow transition duration-300 transform hover:scale-105 inline-flex items-center space-x-3"
-              >
-                <svg
-                  class="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                  ></path>
-                </svg>
-                <span>Upload Audio File</span>
-              </button>
-            </CommonUploader>
-
-            <p class="text-sm text-gray-500 mt-4">
-              No signup required • 100% free to try
-            </p>
-          </div>
-
-          <!-- Audio Editor -->
-          <div v-else class="p-6">
-            <AudioEditor
-              :raw-audio="rawAudio"
-              :raw-audio-duration="rawAudioDuration"
-              @close="$emit('close')"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="py-20 px-6">
-      <div class="container mx-auto max-w-4xl text-center">
-        <h2 class="text-4xl md:text-5xl font-bold mb-6">
-          Open Source Vue 3 MP3 Editor
-        </h2>
-        <p class="text-xl text-gray-400 mb-8">Check out the code on GitHub</p>
-        <div class="flex justify-center">
-          <a
-            href="https://github.com/tony-nz/waveedit-pro"
-            target="_blank"
-            class="bg-gray-800 hover:bg-gray-700 px-8 py-4 rounded-lg font-semibold transition duration-300 inline-flex items-center space-x-3 border border-gray-600"
-          >
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-              <path
-                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
-              />
-            </svg>
-            <span>View on GitHub</span>
-          </a>
-        </div>
-      </div>
-    </section>
-    <!-- Footer -->
-    <footer id="contact" class="py-12 px-6 border-t border-gray-800">
-      <div class="container mx-auto max-w-6xl">
-        <div class="text-center text-gray-500">
-          <p>&copy; 2025 Vue MP3 Editor Pro. All rights reserved.</p>
-        </div>
-      </div>
-    </footer>
   </div>
 </template>
 
 <script setup lang="ts">
+import { withDefaults } from "vue";
 import CommonUploader from "../common/CommonUploader.vue";
 import AudioEditor from "./AudioEditor.vue";
 
-defineProps<{
-  rawAudio?: File | null;
-  rawAudioDuration?: number;
-}>();
+const props = withDefaults(
+  defineProps<{
+    rawAudio?: File | null;
+    rawAudioDuration?: number;
+  }>(),
+  {
+    rawAudio: null,
+    rawAudioDuration: 0,
+  }
+);
 
 defineEmits<{
   "set-audio": [file: File];

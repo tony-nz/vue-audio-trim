@@ -3,6 +3,12 @@ import WaveSurfer from 'wavesurfer.js';
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm.js';
 import TimelinePlugin from 'wavesurfer.js/dist/plugins/timeline.esm.js';
 
+/**
+ * Composable for managing WaveSurfer instance, region selection, and playback controls
+ * @param rawAudio - The audio file to load
+ * @param rawAudioDuration - Duration of the audio file in seconds
+ * @returns Object containing wavesurfer instance, playback controls, region management functions
+ */
 export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
   const wavesurfer = ref<any>(null);
   const regionsPlugin = ref<any>(null);

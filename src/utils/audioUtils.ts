@@ -1,3 +1,12 @@
+/**
+ * Utility functions for audio processing and UI helpers
+ */
+
+/**
+ * Formats time in seconds to MM:SS.f format
+ * @param v - Time in seconds
+ * @returns Formatted time string
+ */
 export const formatTime = (v: number): string => {
   const minutes = Math.floor(v / 60);
   const formattedMinutes = Number(minutes) < 10 ? `0${minutes}` : minutes;
@@ -9,6 +18,12 @@ export const formatTime = (v: number): string => {
   return `${formattedMinutes}:${formattedSeconds}.${ms}`;
 };
 
+/**
+ * Calculates pixel position for a given time in the waveform
+ * @param time - Time in seconds
+ * @param wavesurfer - WaveSurfer instance (optional)
+ * @returns Pixel position in the waveform
+ */
 export const getRegionPixelPosition = (time: number, wavesurfer?: any): number => {
   if (!wavesurfer) {
     // Fallback when wavesurfer is not available yet

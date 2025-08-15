@@ -3,6 +3,11 @@ import { ref } from 'vue';
 import lamejs from 'lamejs';
 import type { EqItem } from './useAudioEffects';
 
+/**
+ * Composable for audio processing and export functionality
+ * Handles MP3 encoding using lamejs, applies effects, and manages export state
+ * @returns Object containing export functions and loading state
+ */
 export function useAudioExport() {
   const exportFormat = ref('mp3');
   const isExporting = ref(false);

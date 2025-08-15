@@ -13,14 +13,10 @@
   </div>
 
   <div v-else class="flex items-center gap-4">
-    <div
-      v-if="label"
-      class="flex justify-end items-center"
-      style="width: 120px"
-    >
+    <div v-if="label" class="flex justify-end items-center">
       {{ label }}
     </div>
-    <div class="flex gap-3 items-center" style="width: 200px">
+    <div class="flex gap-3 items-center w-full">
       <Slider
         :model-value="modelValue"
         :min="min"
