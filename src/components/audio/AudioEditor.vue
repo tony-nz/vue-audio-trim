@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center p-4">
-    <div class="player-bg rounded-lg shadow-2xl max-w-5xl w-full">
+  <div class="w-full">
+    <div class="player-bg rounded-lg shadow-2xl w-full">
       <!-- Header Controls -->
       <AudioEditorHeader 
         :actions="actions"
