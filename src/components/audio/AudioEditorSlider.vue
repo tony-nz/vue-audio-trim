@@ -13,7 +13,11 @@
   </div>
 
   <div v-else class="flex items-center gap-4">
-    <div v-if="label" class="flex justify-end items-center" style="width: 120px">
+    <div
+      v-if="label"
+      class="flex justify-end items-center"
+      style="width: 120px"
+    >
       {{ label }}
     </div>
     <div class="flex gap-3 items-center" style="width: 200px">
@@ -36,16 +40,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import Slider from 'primevue/slider';
-import BaseButton from '../common/BaseButton.vue';
+import { defineComponent, ref } from "vue";
+import Slider from "primevue/slider";
+import BaseButton from "../common/BaseButton.vue";
 
 export default defineComponent({
-  name: 'AudioEditorSlider',
-  
+  name: "AudioEditorSlider",
+
   components: {
     Slider,
-    BaseButton
+    BaseButton,
   },
 
   props: {
@@ -69,12 +73,12 @@ export default defineComponent({
     vertical: Boolean,
   },
 
-  emits: ['update:model-value'],
+  emits: ["update:model-value"],
 
   setup(props, { emit }) {
     const defaultValue = ref(props.modelValue);
     function reset() {
-      emit('update:model-value', defaultValue.value);
+      emit("update:model-value", defaultValue.value);
     }
 
     return {
