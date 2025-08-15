@@ -1,126 +1,166 @@
 <template>
-  <div class="flex flex-col w-full flex-nowrap">
-    <div
-      class="action-tabs flex justify-center items-center gap-4 shadow-md p-8"
-    >
-      <BaseButton
-        v-for="action in actions"
-        :key="action.key"
-        :class="{ 'shadow-lg': selectedAction === action.key }"
-        :color="selectedAction === action.key ? 'primary' : 'blue-grey-7'"
-        :tooltip="action.tooltip"
-        :flat="selectedAction !== action.key"
-        @click="selectAction(action.key)"
-      >
-        <i :class="`pi pi-${action.icon}`" class="text-lg" />
-      </BaseButton>
-      <BaseButton
-        color="blue-grey-7"
-        tooltip="Close"
-        flat
-        @click="showCloseAudioDialog"
-      >
-        <i class="pi pi-times text-lg" />
-      </BaseButton>
-    </div>
-
-    <div class="waveform-wrapper">
-      <div id="waveform" class="waveform" />
-
-      <div
-        class="waveform__time flex justify-center items-center text-blue-500 text-base font-medium"
-      >
-        {{ formatTime(region[0]) }}
-        —
-        {{ formatTime(region[1]) }}
-      </div>
-    </div>
-
-    <div
-      class="bottom-section flex flex-col items-center gap-16 py-12 shadow-md"
-    >
-      <BaseButton
-        class="shadow-14"
-        color="primary"
-        size="20px"
-        padding="sm xl"
-        tabindex="0"
-        unelevated
-        @click="handlePlayPause"
-      >
-        <transition name="zoom" mode="out-in">
-          <i v-if="isPlaying" class="pi pi-pause play-icon" />
-          <i v-else class="pi pi-play play-icon" />
-        </transition>
-      </BaseButton>
-
-      <div v-show="selectedAction === 'volume'">
-        <AudioEditorSliderVolume
-          :model-value="volume"
-          label="Browser volume"
-          @update:model-value="setVolume"
-        />
-        <AudioEditorSliderVolume
-          v-model="exportedVolume"
-          label="Export volume"
-        />
-      </div>
-      <div v-show="selectedAction === 'speed'">
-        <div class="text-subtitle2 text-center">
-          Average BPM ~{{
-            musicInfo?.tempo
-              ? Math.round(musicInfo?.tempo * (speed / 100))
-              : "Undefined"
-          }}
+  <div class="min-h-screen flex items-center justify-center p-4">
+    <div class="player-bg rounded-lg shadow-2xl max-w-5xl w-full">
+      <!-- Header Controls -->
+      <div class="flex items-center justify-between p-4 border-b border-slate-600">
+        <div class="flex items-center">
+          <button
+            v-for="action in actions"
+            :key="action.key"
+            :class="[
+              'text-gray-300 hover:text-white p-2 mr-2',
+              selectedAction === action.key ? 'text-white' : ''
+            ]"
+            :title="action.tooltip"
+            @click="selectAction(action.key)"
+          >
+            <i :class="`fas fa-${action.icon}`"></i>
+          </button>
         </div>
-        <AudioEditorSlider
-          :model-value="speed"
-          label="Speed"
-          :label-value="speed / 100"
-          :min="10"
-          :max="300"
-          :step="10"
-          @update:model-value="setSpeed"
-        />
-      </div>
-      <div v-show="selectedAction === 'bitrate'">
-        <AudioEditorSlider
-          v-model="bitrate"
-          label="Export bitrate"
-          :min="16"
-          :max="320"
-        />
-      </div>
-      <div v-show="selectedAction === 'equalizer'" class="flex flex-row gap-4">
-        <div class="flex flex-row gap-2">
-          <AudioEditorSlider
-            v-for="(item, index) in equalizer"
-            :key="item.f"
-            :model-value="item.value"
-            :label="item.f.toString()"
-            :min="-12"
-            :max="12"
-            vertical
-            reverse
-            @update:model-value="updateEqualizer($event, index)"
-          />
+
+        <div class="flex items-center">
+          <button class="text-gray-300 hover:text-white flex items-center p-2" @click="resetAll">
+            <i class="fas fa-undo mr-2"></i>
+            <span>Reset</span>
+          </button>
+          <button class="text-gray-300 hover:text-white p-2 ml-2" @click="showCloseAudioDialog">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
-        <BaseButton
-          class="self-center"
-          style="margin-bottom: 28px"
-          icon="restart_alt"
-          tooltip="Reset EQ"
-          @click="resetEqualizer"
-        />
       </div>
-      <BaseButton
-        class="shadow-14"
-        label="Export"
-        color="primary"
-        padding="sm xl"
-        unelevated
-        @click="exportAudio"
-      />
+
+      <!-- Main Player Area -->
+      <div class="p-6">
+        <!-- Time display in corner -->
+        <div class="relative mb-4">
+          <div class="time-display text-white text-sm absolute top-0 left-0">
+            {{ formatTime(currentTime) }}
+          </div>
+        </div>
+
+        <!-- Track Title -->
+        <div class="text-center text-gray-300 text-sm mb-4 mt-8">
+          {{ rawAudio?.name || 'No file loaded' }}
+        </div>
+
+        <!-- Waveform Area -->
+        <div class="waveform-container rounded p-4 mb-6">
+          <div class="relative">
+            <div class="flex justify-between text-xs text-gray-400 mb-2">
+              <span>{{ formatTime(region[0]) }}</span>
+              <span>{{ formatTime(region[1]) }}</span>
+            </div>
+            <div id="waveform" class="relative h-24"></div>
+            <div class="text-center text-gray-400 text-sm mt-2">
+              {{ formatTime(region[1] - region[0]) }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Effects Panel (shown based on selected action) -->
+        <div v-if="selectedAction" class="mb-6 bg-slate-700 bg-opacity-50 rounded p-4">
+          <div v-show="selectedAction === 'volume'" class="space-y-4">
+            <AudioEditorSliderVolume
+              :model-value="volume"
+              label="Browser volume"
+              @update:model-value="setVolume"
+            />
+            <AudioEditorSliderVolume
+              v-model="exportedVolume"
+              label="Export volume"
+            />
+          </div>
+          <div v-show="selectedAction === 'speed'" class="space-y-4">
+            <div class="text-center text-gray-300">
+              Average BPM ~{{
+                musicInfo?.tempo
+                  ? Math.round(musicInfo?.tempo * (speed / 100))
+                  : "Undefined"
+              }}
+            </div>
+            <AudioEditorSlider
+              :model-value="speed"
+              label="Speed"
+              :label-value="speed / 100"
+              :min="10"
+              :max="300"
+              :step="10"
+              @update:model-value="setSpeed"
+            />
+          </div>
+          <div v-show="selectedAction === 'bitrate'" class="space-y-4">
+            <AudioEditorSlider
+              v-model="bitrate"
+              label="Export bitrate"
+              :min="16"
+              :max="320"
+            />
+          </div>
+          <div v-show="selectedAction === 'equalizer'" class="flex flex-row gap-4">
+            <div class="flex flex-row gap-2">
+              <AudioEditorSlider
+                v-for="(item, index) in equalizer"
+                :key="item.f"
+                :model-value="item.value"
+                :label="item.f.toString()"
+                :min="-12"
+                :max="12"
+                vertical
+                reverse
+                @update:model-value="updateEqualizer($event, index)"
+              />
+            </div>
+            <button
+              class="self-center text-gray-300 hover:text-white p-2"
+              style="margin-bottom: 28px"
+              title="Reset EQ"
+              @click="resetEqualizer"
+            >
+              <i class="fas fa-undo"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Bottom Controls -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <!-- Play Button -->
+            <button
+              class="bg-slate-700 hover:bg-slate-600 text-white p-3 rounded"
+              @click="handlePlayPause"
+            >
+              <i v-if="isPlaying" class="fas fa-pause"></i>
+              <i v-else class="fas fa-play"></i>
+            </button>
+
+            <!-- Time displays -->
+            <div class="flex items-center space-x-4">
+              <span class="time-display text-white text-sm">{{ formatTime(region[0]) }}</span>
+              <span class="time-display text-white text-sm">{{ formatTime(region[1]) }}</span>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <div class="flex items-center text-gray-300">
+              <span class="mr-2">mp3</span>
+              <select
+                v-model="exportFormat"
+                class="bg-transparent border-none outline-none cursor-pointer"
+              >
+                <option value="mp3">mp3</option>
+                <option value="wav">wav</option>
+              </select>
+            </div>
+
+            <button
+              class="bg-white text-slate-800 px-6 py-2 rounded-full font-medium hover:bg-gray-100"
+              @click="exportAudio"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <BaseDialog
@@ -212,6 +252,8 @@ export default defineComponent({
     const wavesurfer = ref<any>(null);
     const regionsPlugin = ref<any>(null);
     const isPlaying = ref(false);
+    const currentTime = ref(0);
+    const exportFormat = ref('mp3');
     function formatTime(v: number) {
       const minutes = Math.floor(v / 60);
       const formattedMinutes = Number(minutes) < 10 ? `0${minutes}` : minutes;
@@ -410,6 +452,11 @@ export default defineComponent({
 
         wavesurfer.value.on("pause", () => {
           isPlaying.value = false;
+        });
+        
+        // Track current time
+        wavesurfer.value.on("timeupdate", (time: number) => {
+          currentTime.value = time;
         });
 
         // Handle errors
@@ -738,22 +785,22 @@ export default defineComponent({
       {
         tooltip: "Volume",
         key: "volume",
-        icon: "volume_up",
+        icon: "volume-up",
       },
       {
         tooltip: "Speed",
         key: "speed",
-        icon: "speed",
+        icon: "tachometer-alt",
       },
       {
         tooltip: "Bitrate",
         key: "bitrate",
-        icon: "grain",
+        icon: "wave-square",
       },
       {
         tooltip: "Equalizer",
         key: "equalizer",
-        icon: "equalizer",
+        icon: "sliders-h",
       },
     ];
     function selectAction(key: string) {
@@ -770,6 +817,37 @@ export default defineComponent({
       wavesurfer.value?.pause();
       dialog.open("closeConfirm");
     }
+    
+    function resetAll() {
+      // Reset all settings to defaults
+      setVolume(10);
+      exportedVolume.value = 100;
+      setSpeed(100);
+      bitrate.value = 192;
+      resetEqualizer();
+      
+      // Reset region to full duration
+      if (regionsPlugin.value) {
+        const regions = regionsPlugin.value.getRegions();
+        regions.forEach((r: any) => r.remove());
+        
+        const newRegion = regionsPlugin.value.addRegion({
+          start: 0,
+          end: props.rawAudioDuration,
+          loop: true,
+          color: "rgba(96, 165, 250, 0.2)",
+          drag: true,
+          resize: true,
+        });
+        
+        newRegion.on("update-end", () => {
+          updateExportRegion({ start: newRegion.start, end: newRegion.end });
+        });
+      }
+      
+      // Reset playback position
+      wavesurfer.value?.seekTo(0);
+    }
 
     return {
       dialog,
@@ -777,6 +855,8 @@ export default defineComponent({
       wavesurfer,
       regionsPlugin,
       isPlaying,
+      currentTime,
+      exportFormat,
       handlePlayPause,
       formatTime,
       isTempoLoading,
@@ -804,79 +884,80 @@ export default defineComponent({
       selectedAction,
 
       showCloseAudioDialog,
+      resetAll,
+      
+      rawAudio: props.rawAudio,
     };
   },
 });
 </script>
 
 <style scoped>
-.waveform-wrapper {
-  padding: 64px 32px 0 32px;
-  background: #d4dded2e;
+/* Waveform styling */
+#waveform :deep(wave) {
+  background-color: transparent !important;
 }
 
-.waveform__time {
-  padding: 20px 0;
+#waveform :deep(wave > canvas) {
+  filter: brightness(1.2);
 }
 
-.waveform-wrapper :deep(.waveform > wave) {
-  border-radius: 12px;
-}
-
-.waveform-wrapper :deep(.waveform > wave > wave) {
-  border-right-color: #ff2a6f !important;
-}
-
-.waveform-wrapper :deep(.wavesurfer-region) {
+#waveform :deep(.wavesurfer-region) {
   background-color: rgba(96, 165, 250, 0.2) !important;
-  border-radius: 12px !important;
-  box-shadow: rgba(147, 197, 253, 1) 0 0 32px 7px, #738caa7a 0 0 0 10000px;
+  border-left: 2px solid #06b6d4 !important;
+  border-right: 2px solid #06b6d4 !important;
 }
 
-.waveform-wrapper :deep(.wavesurfer-handle) {
-  background-color: #2563eb !important;
-  width: 16px !important;
-  cursor: grab !important;
+#waveform :deep(.wavesurfer-handle) {
+  background-color: #06b6d4 !important;
+  width: 4px !important;
+  cursor: ew-resize !important;
+  top: 0 !important;
+  bottom: 0 !important;
 }
 
-.waveform-wrapper :deep(.wavesurfer-handle:hover) {
-  background-color: #1d4ed8 !important;
+#waveform :deep(.wavesurfer-handle-start) {
+  left: -2px !important;
 }
 
-.waveform-wrapper :deep(.wavesurfer-handle:active) {
-  cursor: grabbing !important;
-  background-color: #1e40af !important;
+#waveform :deep(.wavesurfer-handle-end) {
+  right: -2px !important;
 }
 
-.waveform-wrapper :deep(.wavesurfer-handle-start) {
-  border-radius: 12px 0 0 12px !important;
+/* Custom select styling */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23d1d5db' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 12px;
+  padding-right: 2rem;
 }
 
-.waveform-wrapper :deep(.wavesurfer-handle-end) {
-  border-radius: 0 12px 12px 0 !important;
+/* Slider styling */
+.slider-container :deep(input[type="range"]) {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
 }
 
-.action-tabs {
-  padding: 32px 16px;
+.slider-container :deep(input[type="range"]::-webkit-slider-track) {
+  background: #334155;
+  height: 4px;
+  border-radius: 2px;
 }
 
-.bottom-section {
-  padding-left: 32px;
-  padding-right: 32px;
-  height: 100%;
-}
-
-.play-icon {
-  font-size: 20px;
-}
-
-.zoom-enter-active,
-.zoom-leave-active {
-  transition: all 0.05s;
-}
-
-.zoom-enter-from,
-.zoom-leave-to {
-  transform: scale(0);
+.slider-container :deep(input[type="range"]::-webkit-slider-thumb) {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -6px;
 }
 </style>
