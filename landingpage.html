@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WaveEdit Pro - Visual Audio Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @keyframes wave {
+        0%,
+        100% {
+          transform: scaleY(1);
+        }
+        50% {
+          transform: scaleY(1.5);
+        }
+      }
+      .wave-bar {
+        animation: wave 1s ease-in-out infinite;
+      }
+      .wave-bar:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+      .wave-bar:nth-child(3) {
+        animation-delay: 0.2s;
+      }
+      .wave-bar:nth-child(4) {
+        animation-delay: 0.3s;
+      }
+      .wave-bar:nth-child(5) {
+        animation-delay: 0.4s;
+      }
+
+      .gradient-text {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hover-glow:hover {
+        box-shadow: 0 0 40px rgba(102, 126, 234, 0.5);
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      .float-animation {
+        animation: float 3s ease-in-out infinite;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-white overflow-x-hidden">
+    <!-- Navigation -->
+    <nav
+      class="fixed top-0 w-full bg-gray-900/95 backdrop-blur-sm z-50 border-b border-gray-800"
+    >
+      <div
+        class="container mx-auto px-6 py-4 flex justify-between items-center"
+      >
+        <div class="flex items-center space-x-2">
+          <div class="flex space-x-1">
+            <div class="w-1 h-6 bg-purple-500 wave-bar"></div>
+            <div class="w-1 h-6 bg-purple-400 wave-bar"></div>
+            <div class="w-1 h-6 bg-purple-500 wave-bar"></div>
+            <div class="w-1 h-6 bg-purple-400 wave-bar"></div>
+            <div class="w-1 h-6 bg-purple-500 wave-bar"></div>
+          </div>
+          <span class="text-xl font-bold gradient-text">WaveEdit Pro</span>
+        </div>
+        <div class="hidden md:flex space-x-8">
+          <a href="#features" class="hover:text-purple-400 transition"
+            >Features</a
+          >
+          <a href="#demo" class="hover:text-purple-400 transition">Demo</a>
+          <a href="#pricing" class="hover:text-purple-400 transition"
+            >Pricing</a
+          >
+          <a href="#contact" class="hover:text-purple-400 transition"
+            >Contact</a
+          >
+        </div>
+        <button class="md:hidden">
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            ></path>
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-24 pb-20 px-6">
+      <div class="container mx-auto max-w-6xl">
+        <div class="text-center mb-16">
+          <h1 class="text-5xl md:text-7xl font-bold mb-6">
+            <span class="gradient-text">Visual Audio Editing</span><br />
+            Made Simple
+          </h1>
+          <p class="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
+            Professional-grade audio editing with an intuitive visual interface.
+            Cut, fade, adjust volume and BPM - all in your browser.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="#demo"
+              class="bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-4 rounded-full font-semibold hover-glow transition duration-300 transform hover:scale-105"
+            >
+              Try It Free
+            </a>
+            <a
+              href="#features"
+              class="border border-purple-500 px-8 py-4 rounded-full font-semibold hover:bg-purple-500/20 transition duration-300"
+            >
+              Learn More
+            </a>
+          </div>
+        </div>
+
+        <!-- Hero Visual -->
+        <div class="relative">
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 blur-3xl"
+          ></div>
+          <div
+            class="relative bg-gray-800 rounded-2xl p-8 border border-gray-700 hover-glow transition duration-300"
+          >
+            <div class="flex justify-between items-center mb-6">
+              <div class="flex space-x-2">
+                <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+              </div>
+              <span class="text-gray-500 text-sm">WaveEdit Pro v2.0</span>
+            </div>
+            <div
+              class="h-32 bg-gradient-to-r from-purple-600/30 to-pink-600/30 rounded-lg flex items-center justify-center"
+            >
+              <div class="flex space-x-1 h-20">
+                <div class="w-2 bg-purple-500 rounded-full wave-bar"></div>
+                <div class="w-2 bg-purple-400 rounded-full wave-bar"></div>
+                <div class="w-2 bg-purple-500 rounded-full wave-bar"></div>
+                <div class="w-2 bg-purple-400 rounded-full wave-bar"></div>
+                <div class="w-2 bg-purple-500 rounded-full wave-bar"></div>
+                <div class="w-2 bg-purple-400 rounded-full wave-bar"></div>
+                <div class="w-2 bg-purple-500 rounded-full wave-bar"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 px-6 bg-gray-800/50">
+      <div class="container mx-auto max-w-6xl">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl md:text-5xl font-bold mb-4 gradient-text">
+            Powerful Features
+          </h2>
+          <p class="text-xl text-gray-400">
+            Everything you need for professional audio editing
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Feature 1 -->
+          <div
+            class="bg-gray-800 rounded-xl p-8 border border-gray-700 hover:border-purple-500 transition duration-300 transform hover:scale-105"
+          >
+            <div
+              class="w-16 h-16 bg-purple-600/20 rounded-lg flex items-center justify-center mb-6"
+            >
+              <svg
+                class="w-8 h-8 text-purple-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">Precision Cutting</h3>
+            <p class="text-gray-400">
+              Cut and trim audio with millisecond precision using our visual
+              waveform editor
+            </p>
+          </div>
+
+          <!-- Feature 2 -->
+          <div
+            class="bg-gray-800 rounded-xl p-8 border border-gray-700 hover:border-purple-500 transition duration-300 transform hover:scale-105"
+          >
+            <div
+              class="w-16 h-16 bg-purple-600/20 rounded-lg flex items-center justify-center mb-6"
+            >
+              <svg
+                class="w-8 h-8 text-purple-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">Fade Effects</h3>
+            <p class="text-gray-400">
+              Apply smooth fade in and fade out effects with customizable curves
+            </p>
+          </div>
+
+          <!-- Feature 3 -->
+          <div
+            class="bg-gray-800 rounded-xl p-8 border border-gray-700 hover:border-purple-500 transition duration-300 transform hover:scale-105"
+          >
+            <div
+              class="w-16 h-16 bg-purple-600/20 rounded-lg flex items-center justify-center mb-6"
+            >
+              <svg
+                class="w-8 h-8 text-purple-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">Volume Control</h3>
+            <p class="text-gray-400">
+              Adjust volume levels with precision mixing controls and real-time
+              preview
+            </p>
+          </div>
+
+          <!-- Feature 4 -->
+          <div
+            class="bg-gray-800 rounded-xl p-8 border border-gray-700 hover:border-purple-500 transition duration-300 transform hover:scale-105"
+          >
+            <div
+              class="w-16 h-16 bg-purple-600/20 rounded-lg flex items-center justify-center mb-6"
+            >
+              <svg
+                class="w-8 h-8 text-purple-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">BPM Adjustment</h3>
+            <p class="text-gray-400">
+              Change tempo and BPM without affecting pitch quality
+            </p>
+          </div>
+
+          <!-- Feature 5 -->
+          <div
+            class="bg-gray-800 rounded-xl p-8 border border-gray-700 hover:border-purple-500 transition duration-300 transform hover:scale-105"
+          >
+            <div
+              class="w-16 h-16 bg-purple-600/20 rounded-lg flex items-center justify-center mb-6"
+            >
+              <svg
+                class="w-8 h-8 text-purple-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">Easy Export</h3>
+            <p class="text-gray-400">
+              Export your edited audio in multiple formats with one click
+            </p>
+          </div>
+
+          <!-- Feature 6 -->
+          <div
+            class="bg-gray-800 rounded-xl p-8 border border-gray-700 hover:border-purple-500 transition duration-300 transform hover:scale-105"
+          >
+            <div
+              class="w-16 h-16 bg-purple-600/20 rounded-lg flex items-center justify-center mb-6"
+            >
+              <svg
+                class="w-8 h-8 text-purple-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">Visual Interface</h3>
+            <p class="text-gray-400">
+              See your audio waveform in real-time for precise editing
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="py-20 px-6">
+      <div class="container mx-auto max-w-4xl">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl md:text-5xl font-bold mb-4 gradient-text">
+            Try It Now
+          </h2>
+          <p class="text-xl text-gray-400">
+            Upload your audio file and start editing instantly
+          </p>
+        </div>
+
+        <div
+          class="bg-gray-800 rounded-2xl p-12 border border-gray-700 text-center"
+        >
+          <div class="mb-8">
+            <svg
+              class="w-24 h-24 text-purple-500 mx-auto mb-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+              ></path>
+            </svg>
+            <h3 class="text-2xl font-bold mb-4">Upload Your Audio File</h3>
+            <p class="text-gray-400 mb-8">
+              Supports MP3, WAV, OGG, and more formats
+            </p>
+          </div>
+
+          <button
+            class="bg-gradient-to-r from-purple-600 to-pink-600 px-12 py-4 rounded-full font-semibold hover-glow transition duration-300 transform hover:scale-105 inline-flex items-center space-x-3"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+              ></path>
+            </svg>
+            <span>Upload Audio File</span>
+          </button>
+
+          <p class="text-sm text-gray-500 mt-4">
+            No signup required • 100% free to try
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 px-6 bg-gray-800/50">
+      <div class="container mx-auto max-w-6xl">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl md:text-5xl font-bold mb-4 gradient-text">
+            Simple Pricing
+          </h2>
+          <p class="text-xl text-gray-400">
+            Choose the plan that works for you
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <!-- Free Plan -->
+          <div
+            class="bg-gray-800 rounded-xl p-8 border border-gray-700 hover:border-purple-500 transition duration-300"
+          >
+            <h3 class="text-2xl font-bold mb-2">Free</h3>
+            <p class="text-gray-400 mb-6">Perfect for trying out</p>
+            <div class="text-4xl font-bold mb-6">
+              $0<span class="text-lg text-gray-400">/month</span>
+            </div>
+            <ul class="space-y-3 mb-8">
+              <li class="flex items-center">
+                <svg
+                  class="w-5 h-5 text-green-500 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+                5 exports per month
+              </li>
+              <li class="flex items-center">
+                <svg
+                  class="w-5 h-5 text-green-500 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+                Basic editing tools
+              </li>
+              <li class="flex items-center">
+                <svg
+                  class="w-5 h-5 text-green-500 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+                Watermark on exports
+              </li>
+            </ul>
+            <button
+              class="w-full border border-purple-500 py-3 rounded-lg font-semibold hover:bg-purple-500/20 transition duration-300"
+            >
+              Get Started
+            </button>
+          </div>
+
+          <!-- Pro Plan -->
+          <div
+            class="bg-gradient-to-b from-purple-900/50 to-gray-800 rounded-xl p-8 border-2 border-purple-500 transform scale-105 relative"
+          >
+            <div
+              class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-purple-500 text-sm px-4 py-1 rounded-full"
+            >
+              Most Popular
+            </div>
+            <h3 class="text-2xl font-bold mb-2">Pro</h3>
+            <p class="text-gray-400 mb-6">For regular users</p>
+            <div class="text-4xl font-bold mb-6">
+              $19<span class="text-lg text-gray-400">/month</span>
+            </div>
+            <ul class="space-y-3 mb-8">
+              <li class="flex items-center">
+                <svg
+                  class="w-5 h-5 text-green-500 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+                Unlimited exports
+              </li>
+              <li class="flex items-center">
+                <svg
+                  class="w-5 h-5 text-green-500 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+                All editing features
+              </li>
+              <li class="flex items-center">
+                <svg
+                  class="w-5 h-5 text-green-500 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+                No watermark
+              </li>
+              <li class="flex items-center">
+                <svg
+                  class="w-5 h-5 text-green-500 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+                Priority support
+              </li>
+            </ul>
+            <button
+              class="w-full bg-gradient-to-r from-purple-600 to-pink-600 py-3 rounded-lg font-semibold hover-glow transition duration-300"
+            >
+              Upgrade to Pro
+            </button>
+          </div>
+
+          <!-- Business Plan -->
+          <div
+            class="bg-gray-800 rounded-xl p-8 border border-gray-700 hover:border-purple-500 transition duration-300"
+          >
+            <h3 class="text-2xl font-bold mb-2">Business</h3>
+            <p class="text-gray-400 mb-6">For teams and studios</p>
+            <div class="text-4xl font-bold mb-6">
+              $49<span class="text-lg text-gray-400">/month</span>
+            </div>
+            <ul class="space-y-3 mb-8">
+              <li class="flex items-center">
+                <svg
+                  class="w-5 h-5 text-green-500 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+                Everything in Pro
+              </li>
+              <li class="flex items-center">
+                <svg
+                  class="w-5 h-5 text-green-500 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+                Team collaboration
+              </li>
+              <li class="flex items-center">
+                <svg
+                  class="w-5 h-5 text-green-500 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+                API access
+              </li>
+              <li class="flex items-center">
+                <svg
+                  class="w-5 h-5 text-green-500 mr-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+                Custom branding
+              </li>
+            </ul>
+            <button
+              class="w-full border border-purple-500 py-3 rounded-lg font-semibold hover:bg-purple-500/20 transition duration-300"
+            >
+              Contact Sales
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-6">
+      <div class="container mx-auto max-w-4xl text-center">
+        <h2 class="text-4xl md:text-5xl font-bold mb-6">
+          Ready to Transform Your Audio?
+        </h2>
+        <p class="text-xl text-gray-400 mb-8">
+          Join thousands of creators who edit audio faster with WaveEdit Pro
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href="#demo"
+            class="bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-4 rounded-full font-semibold hover-glow transition duration-300 transform hover:scale-105"
+          >
+            Start Editing Free
+          </a>
+          <a
+            href="#pricing"
+            class="border border-purple-500 px-8 py-4 rounded-full font-semibold hover:bg-purple-500/20 transition duration-300"
+          >
+            View Pricing
+          </a>
+        </div>
+
+        <div class="mt-16 flex justify-center space-x-8 text-gray-400">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-white">50K+</div>
+            <div>Active Users</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-white">1M+</div>
+            <div>Audio Files Edited</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-white">4.9/5</div>
+            <div>User Rating</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="py-12 px-6 border-t border-gray-800">
+      <div class="container mx-auto max-w-6xl">
+        <div class="grid md:grid-cols-4 gap-8 mb-8">
+          <div>
+            <div class="flex items-center space-x-2 mb-4">
+              <div class="flex space-x-1">
+                <div class="w-1 h-6 bg-purple-500"></div>
+                <div class="w-1 h-6 bg-purple-400"></div>
+                <div class="w-1 h-6 bg-purple-500"></div>
+              </div>
+              <span class="text-xl font-bold">WaveEdit Pro</span>
+            </div>
+            <p class="text-gray-400">Professional audio editing made simple</p>
+          </div>
+
+          <div>
+            <h4 class="font-semibold mb-4">Product</h4>
+            <ul class="space-y-2 text-gray-400">
+              <li>
+                <a href="#features" class="hover:text-purple-400 transition"
+                  >Features</a
+                >
+              </li>
+              <li>
+                <a href="#pricing" class="hover:text-purple-400 transition"
+                  >Pricing</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-purple-400 transition">Updates</a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="font-semibold mb-4">Support</h4>
+            <ul class="space-y-2 text-gray-400">
+              <li>
+                <a href="#" class="hover:text-purple-400 transition"
+                  >Documentation</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-purple-400 transition"
+                  >Tutorials</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-purple-400 transition">Contact</a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="font-semibold mb-4">Connect</h4>
+            <div class="flex space-x-4">
+              <a
+                href="#"
+                class="text-gray-400 hover:text-purple-400 transition"
+              >
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
+                  />
+                </svg>
+              </a>
+              <a
+                href="#"
+                class="text-gray-400 hover:text-purple-400 transition"
+              >
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"
+                  />
+                </svg>
+              </a>
+              <a
+                href="#"
+                class="text-gray-400 hover:text-purple-400 transition"
+              >
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1112.324 0 6.162 6.162 0 01-12.324 0zM12 16a4 4 0 110-8 4 4 0 010 8zm4.965-10.405a1.44 1.44 0 112.881.001 1.44 1.44 0 01-2.881-.001z"
+                  />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center text-gray-500 pt-8 border-t border-gray-800">
+          <p>&copy; 2024 WaveEdit Pro. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Smooth scrolling for navigation links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          document.querySelector(this.getAttribute("href")).scrollIntoView({
+            behavior: "smooth",
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
