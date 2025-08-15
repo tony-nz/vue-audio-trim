@@ -1457,7 +1457,8 @@ select {
   margin-top: -6px;
 }
 
-#waveform ::part(canvases) {
+#waveform ::part(canvases),
+#waveform ::part(progress) {
   display: flex;
   align-items: center;
   height: 200px;
