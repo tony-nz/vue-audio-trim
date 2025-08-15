@@ -33,7 +33,7 @@
       <div class="p-6">
         <!-- Time display in corner -->
         <div class="relative mb-4">
-          <div class="time-display text-white text-sm absolute top-0 left-0">
+          <div class="absolute top-0 left-0 bg-white text-slate-800 px-3 py-1 rounded-full text-sm font-medium">
             {{ formatTime(currentTime) }}
           </div>
         </div>
@@ -50,7 +50,24 @@
               <span>{{ formatTime(region[0]) }}</span>
               <span>{{ formatTime(region[1]) }}</span>
             </div>
-            <div id="waveform" class="relative h-24"></div>
+            <div class="relative">
+              <div id="waveform" class="relative h-24"></div>
+              <!-- Cursor time marker -->
+              <div
+                v-if="cursorPosition > -1"
+                class="absolute top-0 pointer-events-none"
+                :style="{
+                  left: cursorPosition + 'px',
+                  transform: 'translateX(-50%)'
+                }"
+              >
+                <div class="relative">
+                  <div class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-80 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                    {{ formatTime(cursorTime) }}
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="text-center text-gray-400 text-sm mt-2">
               {{ formatTime(region[1] - region[0]) }}
             </div>
@@ -254,6 +271,8 @@ export default defineComponent({
     const isPlaying = ref(false);
     const currentTime = ref(0);
     const exportFormat = ref('mp3');
+    const cursorPosition = ref(-1);
+    const cursorTime = ref(0);
     function formatTime(v: number) {
       const minutes = Math.floor(v / 60);
       const formattedMinutes = Number(minutes) < 10 ? `0${minutes}` : minutes;
@@ -409,16 +428,17 @@ export default defineComponent({
         // Initialize WaveSurfer with proper configuration
         wavesurfer.value = WaveSurfer.create({
           container: container as HTMLElement,
-          waveColor: "rgb(207,217,237)",
-          progressColor: "#60A5FA",
+          waveColor: "#10b981", // Green color matching screenshot
+          progressColor: "#059669", // Darker green for played portion
           normalize: true,
           backend: "WebAudio",
           interact: true,
           barWidth: 2,
           barRadius: 3,
-          cursorWidth: 1,
+          cursorWidth: 2, // Thicker cursor
+          cursorColor: "#ffffff", // White cursor
           height: 128,
-          barGap: 3,
+          barGap: 1,
           plugins: [regionsPlugin.value],
         });
 
@@ -434,7 +454,7 @@ export default defineComponent({
             start: 0,
             end: props.rawAudioDuration,
             loop: true,
-            color: "rgba(96, 165, 250, 0.2)",
+            color: "rgba(0, 0, 0, 0)", // Transparent
             drag: true,
             resize: true,
           });
@@ -457,6 +477,23 @@ export default defineComponent({
         // Track current time
         wavesurfer.value.on("timeupdate", (time: number) => {
           currentTime.value = time;
+        });
+        
+        // Track cursor position on hover
+        const waveformEl = container as HTMLElement;
+        waveformEl.addEventListener('mousemove', (e: MouseEvent) => {
+          const rect = waveformEl.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          cursorPosition.value = x;
+          
+          // Calculate time at cursor position
+          const duration = wavesurfer.value.getDuration();
+          const progress = x / rect.width;
+          cursorTime.value = duration * progress;
+        });
+        
+        waveformEl.addEventListener('mouseleave', () => {
+          cursorPosition.value = -1;
         });
 
         // Handle errors
@@ -835,7 +872,7 @@ export default defineComponent({
           start: 0,
           end: props.rawAudioDuration,
           loop: true,
-          color: "rgba(96, 165, 250, 0.2)",
+          color: "rgba(0, 0, 0, 0)", // Transparent
           drag: true,
           resize: true,
         });
@@ -857,6 +894,8 @@ export default defineComponent({
       isPlaying,
       currentTime,
       exportFormat,
+      cursorPosition,
+      cursorTime,
       handlePlayPause,
       formatTime,
       isTempoLoading,
@@ -898,30 +937,63 @@ export default defineComponent({
   background-color: transparent !important;
 }
 
-#waveform :deep(wave > canvas) {
-  filter: brightness(1.2);
-}
-
 #waveform :deep(.wavesurfer-region) {
-  background-color: rgba(96, 165, 250, 0.2) !important;
-  border-left: 2px solid #06b6d4 !important;
-  border-right: 2px solid #06b6d4 !important;
+  background-color: rgba(96, 165, 250, 0.15) !important;
+  border: none !important;
 }
 
 #waveform :deep(.wavesurfer-handle) {
-  background-color: #06b6d4 !important;
-  width: 4px !important;
+  background-color: #60a5fa !important;
+  width: 40px !important;
   cursor: ew-resize !important;
   top: 0 !important;
   bottom: 0 !important;
+  border-radius: 0 !important;
+  opacity: 0.8 !important;
 }
 
 #waveform :deep(.wavesurfer-handle-start) {
-  left: -2px !important;
+  left: 0 !important;
+  transform: translateX(-50%) !important;
 }
 
 #waveform :deep(.wavesurfer-handle-end) {
-  right: -2px !important;
+  right: 0 !important;
+  transform: translateX(50%) !important;
+}
+
+/* Handle dots in the middle */
+#waveform :deep(.wavesurfer-handle)::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: white;
+  border-radius: 50%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 -12px 0 white, 0 12px 0 white;
+}
+
+/* Cursor styling with time marker */
+#waveform :deep(.wavesurfer-cursor) {
+  position: relative;
+}
+
+#waveform :deep(.wavesurfer-cursor)::after {
+  content: attr(data-time);
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 /* Custom select styling */
