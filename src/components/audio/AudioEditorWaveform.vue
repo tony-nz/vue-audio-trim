@@ -15,10 +15,6 @@
           <p class="text-white text-sm font-medium">Loading audio track...</p>
         </div>
       </div>
-      <div class="flex justify-between text-xs text-gray-400 mb-2">
-        <span>{{ formatTime(region[0]) }}</span>
-        <span>{{ formatTime(region[1]) }}</span>
-      </div>
       <div class="relative px-4">
         <div id="waveform" class="relative">
           <!-- Dark overlays for excluded areas (inside waveform only) -->
@@ -54,6 +50,41 @@
           </div>
         </div>
         <div ref="timelineRef" id="wave-timeline" class="mt-4" />
+
+        <!-- Region handle time labels -->
+        <div v-if="wavesurfer && region">
+          <!-- Start time label -->
+          <div
+            class="absolute -top-7 pointer-events-none z-15"
+            :style="{
+              left: getRegionPixelPosition(region[0], wavesurfer) + 10 + 'px',
+            }"
+          >
+            <div class="absolute left-1/2 transform -translate-x-1/2">
+              <div
+                class="bg-dark-player-dark text-white text-xs px-2 py-1 rounded whitespace-nowrap border border-dark-player-border font-medium"
+              >
+                {{ formatTime(region[0]) }}
+              </div>
+            </div>
+          </div>
+
+          <!-- End time label -->
+          <div
+            class="absolute -top-7 pointer-events-none z-15"
+            :style="{
+              left: getRegionPixelPosition(region[1], wavesurfer) + 22 + 'px',
+            }"
+          >
+            <div class="absolute left-1/2 transform -translate-x-1/2">
+              <div
+                class="bg-dark-player-dark text-white text-xs px-2 py-1 rounded whitespace-nowrap border border-dark-player-border font-medium"
+              >
+                {{ formatTime(region[1]) }}
+              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- Playback time marker (follows the thick red playback cursor) -->
         <div
