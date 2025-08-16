@@ -47,9 +47,9 @@
           :bitrate="bitrate"
           :equalizer="equalizer"
           @update-volume="setVolume"
-          @update-exported-volume="(v) => (exportedVolume = v)"
+          @update-exported-volume="(v: any) => (exportedVolume = v)"
           @update-speed="setSpeed"
-          @update-bitrate="(v) => (bitrate = v)"
+          @update-bitrate="(v: any) => (bitrate = v)"
           @update-equalizer="updateEqualizer"
           @reset-equalizer="resetEqualizer"
         />
