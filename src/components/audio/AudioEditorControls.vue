@@ -10,6 +10,15 @@
         <i v-else class="fas fa-play text-xl"></i>
       </button>
 
+      <!-- Stop Button -->
+      <button
+        class="text-gray-300 hover:text-white p-2 bg-dark-player-light border border-dark-player-border rounded-2xl transition-colors p-3 px-6"
+        @click="$emit('stop')"
+        title="Stop and return to beginning"
+      >
+        <i class="fas fa-stop text-xl"></i>
+      </button>
+
       <!-- Fade In Control -->
       <div class="flex items-center">
         <div class="flex items-center">
@@ -179,6 +188,7 @@ defineProps<{
 
 defineEmits<{
   "play-pause": [];
+  stop: [];
   "toggle-fade-in": [];
   "toggle-fade-out": [];
   "toggle-trim-mode": [];

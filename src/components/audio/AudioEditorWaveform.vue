@@ -49,13 +49,13 @@
             ></div>
           </div>
         </div>
-        <div ref="timelineRef" id="wave-timeline" class="mt-4" />
+        <div ref="timelineRef" id="wave-timeline" class="mt-10" />
 
         <!-- Region handle time labels -->
         <div v-if="wavesurfer && region">
           <!-- Start time label -->
           <div
-            class="absolute -top-7 pointer-events-none z-15"
+            class="absolute bottom-14 pointer-events-none z-15"
             :style="{
               left: getRegionPixelPosition(region[0], wavesurfer) + 10 + 'px',
             }"
@@ -71,7 +71,7 @@
 
           <!-- End time label -->
           <div
-            class="absolute -top-7 pointer-events-none z-15"
+            class="absolute bottom-14 pointer-events-none z-15"
             :style="{
               left: getRegionPixelPosition(region[1], wavesurfer) + 22 + 'px',
             }"

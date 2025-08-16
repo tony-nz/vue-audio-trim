@@ -127,7 +127,14 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
       if (isPlaying.value) {
         wavesurfer.value.pause();
       } else {
-        const playPromise = wavesurfer.value.play();
+        // If current time is before region start or after region end, seek to region start
+        const currentPos = wavesurfer.value.getCurrentTime();
+        if (currentPos < region.value[0] || currentPos >= region.value[1]) {
+          wavesurfer.value.seekTo(region.value[0] / wavesurfer.value.getDuration());
+        }
+        
+        // Play from current position to region end
+        const playPromise = wavesurfer.value.play(undefined, region.value[1]);
         if (playPromise && typeof playPromise.catch === "function") {
           await playPromise.catch((error: any) => {
             console.error("Playback failed:", error);
@@ -139,6 +146,17 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
       console.error("Error playing/pausing audio:", error);
       isPlaying.value = false;
     }
+  };
+
+  const handleStop = () => {
+    if (!wavesurfer.value) {
+      console.warn("WaveSurfer instance not available");
+      return;
+    }
+
+    wavesurfer.value.pause();
+    wavesurfer.value.seekTo(region.value[0] / wavesurfer.value.getDuration());
+    isPlaying.value = false;
   };
 
   const adjustStartTime = (delta: number) => {
@@ -209,6 +227,7 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
     isLoading,
     updateExportRegion,
     handlePlayPause,
+    handleStop,
     adjustStartTime,
     adjustEndTime,
     resetRegion,

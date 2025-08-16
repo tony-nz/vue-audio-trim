@@ -65,6 +65,7 @@
           :export-format="exportFormat"
           :is-exporting="isExporting"
           @play-pause="handlePlayPause"
+          @stop="handleStop"
           @toggle-fade-in="toggleFadeIn"
           @toggle-fade-out="toggleFadeOut"
           @toggle-trim-mode="toggleTrimMode"
@@ -132,6 +133,7 @@ const {
   region,
   isLoading,
   handlePlayPause,
+  handleStop,
   adjustStartTime,
   adjustEndTime,
   resetRegion,
