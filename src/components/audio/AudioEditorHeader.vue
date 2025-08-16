@@ -1,18 +1,40 @@
 <template>
   <div class="flex items-center justify-between p-4 border-b border-slate-600">
-    <div class="flex items-center">
-      <button
-        v-for="action in actions"
-        :key="action.key"
-        :class="[
-          'text-gray-300 hover:text-white p-2 mr-2',
-          selectedAction === action.key ? 'text-white' : '',
-        ]"
-        :title="action.tooltip"
-        @click="$emit('select-action', action.key)"
-      >
-        <i :class="`fas fa-${action.icon}`"></i>
-      </button>
+    <div class="flex items-center space-x-4 w-full mr-8">
+      <!-- Action Buttons -->
+      <div class="flex items-center space-x-2">
+        <button
+          v-for="action in actions"
+          :key="action.key"
+          :class="[
+            'flex items-center px-4 py-2 rounded-lg transition-all',
+            selectedAction === action.key
+              ? 'bg-dark-player-light text-white border border-dark-player-border'
+              : 'text-gray-300 hover:text-white hover:bg-dark-player-dark',
+          ]"
+          :title="action.tooltip"
+          @click="$emit('select-action', action.key)"
+        >
+          <i :class="`fas fa-${action.icon} mr-2`"></i>
+          <span
+            v-if="selectedAction === action.key"
+            class="text-sm font-medium"
+          >
+            {{ action.tooltip }}
+          </span>
+        </button>
+      </div>
+
+      <!-- Editable Title -->
+      <div class="flex items-center w-full">
+        <input
+          :value="title"
+          @blur="updateTitle($event)"
+          @keydown.enter="($event.target as HTMLInputElement).blur()"
+          class="text-white font-medium text-lg bg-transparent border p-1 px-2 rounded border-slate-700 outline-none min-w-0 flex-1 w-full"
+          :placeholder="title || 'Untitled'"
+        />
+      </div>
     </div>
 
     <div class="flex items-center">
@@ -43,11 +65,18 @@ interface Action {
 defineProps<{
   actions: Action[];
   selectedAction: string;
+  title: string;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   "select-action": [key: string];
+  "update-title": [title: string];
   reset: [];
   close: [];
 }>();
+
+const updateTitle = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  emit("update-title", input.value);
+};
 </script>

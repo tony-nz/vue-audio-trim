@@ -174,8 +174,9 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
     if (regions.length > 0) {
       const r = regions[0];
       r.setOptions({ start: newStart, end: region.value[1] });
-      updateExportRegion({ start: newStart, end: region.value[1] });
     }
+    // Always update the reactive region value for overlays
+    updateExportRegion({ start: newStart, end: region.value[1] });
   };
 
   const adjustEndTime = (delta: number) => {
@@ -187,8 +188,29 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
     if (regions.length > 0) {
       const r = regions[0];
       r.setOptions({ start: region.value[0], end: newEnd });
-      updateExportRegion({ start: region.value[0], end: newEnd });
     }
+    // Always update the reactive region value for overlays
+    updateExportRegion({ start: region.value[0], end: newEnd });
+  };
+
+  const setStartTime = (time: number) => {
+    const newStart = Math.max(0, Math.min(time, region.value[1] - 0.1));
+    const regions = regionsPlugin.value.getRegions();
+    if (regions.length > 0) {
+      const r = regions[0];
+      r.setOptions({ start: newStart, end: region.value[1] });
+    }
+    updateExportRegion({ start: newStart, end: region.value[1] });
+  };
+
+  const setEndTime = (time: number) => {
+    const newEnd = Math.max(region.value[0] + 0.1, Math.min(time, rawAudioDuration));
+    const regions = regionsPlugin.value.getRegions();
+    if (regions.length > 0) {
+      const r = regions[0];
+      r.setOptions({ start: region.value[0], end: newEnd });
+    }
+    updateExportRegion({ start: region.value[0], end: newEnd });
   };
 
   const resetRegion = () => {
@@ -209,6 +231,9 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
       newRegion.on("update-end", () => {
         updateExportRegion({ start: newRegion.start, end: newRegion.end });
       });
+
+      // Update the reactive region value to remove overlays
+      updateExportRegion({ start: 0, end: rawAudioDuration });
     }
     wavesurfer.value?.seekTo(0);
   };
@@ -236,6 +261,8 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
     handleStop,
     adjustStartTime,
     adjustEndTime,
+    setStartTime,
+    setEndTime,
     resetRegion,
   };
 }

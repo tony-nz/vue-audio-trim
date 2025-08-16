@@ -118,7 +118,7 @@
 
         <!-- Hover cursor time marker with line -->
         <div
-          v-if="cursorPosition > -1"
+          v-if="cursorPosition > -1 && !isLoading"
           class="absolute top-0 bottom-0 pointer-events-none z-10"
           :style="{
             left: cursorPosition + 15 + 'px',

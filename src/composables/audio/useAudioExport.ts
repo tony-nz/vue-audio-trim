@@ -20,7 +20,8 @@ export function useAudioExport() {
     equalizer: EqItem[],
     envelopePlugin: any,
     getEnvelopeVolumeAtTime: (time: number) => number,
-    bitrate: number
+    bitrate: number,
+    customFilename?: string
   ) => {
     try {
       isExporting.value = true;
@@ -85,9 +86,9 @@ export function useAudioExport() {
 
       if (hasEqChanges) {
         const renderedBuffer = await applyEqualizer(newBuffer, equalizer);
-        await downloadAsMp3(renderedBuffer, rawAudio.name, bitrate);
+        await downloadAsMp3(renderedBuffer, customFilename || rawAudio.name, bitrate);
       } else {
-        await downloadAsMp3(newBuffer, rawAudio.name, bitrate);
+        await downloadAsMp3(newBuffer, customFilename || rawAudio.name, bitrate);
       }
     } catch (error) {
       console.error("Export failed:", error);

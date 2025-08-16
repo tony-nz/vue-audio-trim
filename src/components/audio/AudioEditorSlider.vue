@@ -83,3 +83,24 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+:deep(.p-slider-range) {
+  background: #60a5fa !important;
+}
+
+:deep(.p-slider-handle) {
+  background: white !important;
+  border: 2px solid #60a5fa !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+:deep(.p-slider-handle:hover) {
+  background: #f8fafc !important;
+  border-color: #3b82f6 !important;
+}
+
+:deep(.p-slider) {
+  background: #334155 !important;
+}
+</style>

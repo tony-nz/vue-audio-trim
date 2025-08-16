@@ -5,27 +5,15 @@
       <AudioEditorHeader
         :actions="actions"
         :selected-action="selectedAction"
+        :title="editableTitle"
         @select-action="selectAction"
+        @update-title="(newTitle: string) => editableTitle = newTitle"
         @reset="resetAll"
         @close="showCloseAudioDialog"
       />
 
       <!-- Main Player Area -->
       <div class="p-6">
-        <!-- Time display in corner -->
-        <div class="relative mb-4">
-          <div
-            class="absolute top-0 left-0 bg-white text-slate-800 px-3 py-1 rounded-full text-sm font-medium"
-          >
-            {{ formatTime(currentTime) }}
-          </div>
-        </div>
-
-        <!-- Track Title -->
-        <div class="text-center text-gray-300 text-sm mb-4 mt-8">
-          {{ rawAudio?.name || "No file loaded" }}
-        </div>
-
         <!-- Waveform Area -->
         <AudioEditorWaveform
           :region="region"
@@ -53,6 +41,7 @@
           @update-bitrate="(v: any) => (bitrate = v)"
           @update-equalizer="updateEqualizer"
           @reset-equalizer="resetEqualizer"
+          @apply-preset="applyEqPreset"
         />
 
         <!-- Bottom Controls -->
@@ -71,6 +60,8 @@
           @toggle-trim-mode="toggleTrimMode"
           @adjust-start-time="adjustStartTime"
           @adjust-end-time="adjustEndTime"
+          @set-start-time="setStartTime"
+          @set-end-time="setEndTime"
           @export="handleExport"
           @update-export-format="(v: any) => (exportFormat = v)"
         />
@@ -136,6 +127,8 @@ const {
   handleStop,
   adjustStartTime,
   adjustEndTime,
+  setStartTime,
+  setEndTime,
   resetRegion,
 } = useWaveSurfer(props.rawAudio, props.rawAudioDuration);
 
@@ -168,20 +161,32 @@ const actions = [
   { tooltip: "Equalizer", key: "equalizer", icon: "sliders-h" },
 ];
 
-const selectedAction = ref("volume");
+const selectedAction = ref("");
+const editableTitle = ref("");
 
 const selectAction = (key: string) => {
-  selectedAction.value = key;
-  if (key === "speed") {
-    wavesurfer.value?.pause();
-    dialog.open("findBPM");
-    decodeAndSetMusicInfo(props.rawAudio, dialog);
+  // Toggle: if clicking the same action, deselect it
+  if (selectedAction.value === key) {
+    selectedAction.value = "";
+  } else {
+    selectedAction.value = key;
+    if (key === "speed") {
+      wavesurfer.value?.pause();
+      dialog.open("findBPM");
+      decodeAndSetMusicInfo(props.rawAudio, dialog);
+    }
   }
 };
 
 const showCloseAudioDialog = () => {
   wavesurfer.value?.pause();
   dialog.open("closeConfirm");
+};
+
+const applyEqPreset = (presetValues: number[]) => {
+  presetValues.forEach((value, index) => {
+    updateEqualizer(value, index);
+  });
 };
 
 const resetAll = () => {
@@ -206,7 +211,8 @@ const handleExport = () => {
     equalizer.value,
     envelopePlugin.value,
     getEnvelopeVolumeAtTime,
-    bitrate.value
+    bitrate.value,
+    editableTitle.value
   );
 };
 
@@ -242,6 +248,10 @@ watch(
 onMounted(() => {
   createEnvelopePlugin();
   setVolume(wavesurfer.value, 100);
+
+  // Initialize title with filename + suffix
+  const baseName = props.rawAudio.name.replace(/\.[^/.]+$/, ""); // Remove extension
+  editableTitle.value = `${baseName} (VueAudioTrim)`;
 
   const keyHandler = (event: KeyboardEvent) => {
     handleKeyPress(event, handlePlayPause, wavesurfer.value);
@@ -336,16 +346,7 @@ onMounted(() => {
   pointer-events: none;
 }
 
-select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23d1d5db' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.5rem center;
-  background-size: 12px;
-  padding-right: 2rem;
-}
+/* Custom select styling is now handled inline with Tailwind classes */
 
 .fade-slider::-webkit-slider-track {
   background: #475569;
