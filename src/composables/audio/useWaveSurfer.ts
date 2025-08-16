@@ -81,6 +81,12 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
 
     wavesurfer.value.on("timeupdate", (time: number) => {
       currentTime.value = time;
+      
+      // Stop playback if we've reached the region end
+      if (isPlaying.value && time >= region.value[1]) {
+        wavesurfer.value.pause();
+        isPlaying.value = false;
+      }
     });
 
     // Mouse tracking
