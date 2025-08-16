@@ -81,7 +81,7 @@
 
       <!-- Trim/Cut Toggle -->
       <button
-        class="text-gray-300 hover:text-white p-2"
+        class="hidden text-gray-300 hover:text-white p-2"
         :class="{ 'text-white': isTrimMode }"
         @click="$emit('toggle-trim-mode')"
         title="Toggle Trim/Cut Mode"
@@ -172,14 +172,25 @@
           class="appearance-none bg-dark-player-light border border-dark-player-border rounded-2xl text-white font-bold pl-8 pr-12 py-3 text-center cursor-pointer hover:bg-dark-player focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[120px]"
         >
           <option value="mp3">mp3</option>
-          <option value="wav">wav</option>
-          <option value="flac">flac</option>
-          <option value="ogg">ogg</option>
         </select>
         <!-- Custom arrow -->
-        <div class="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-          <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1 1L6 6L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <div
+          class="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none"
+        >
+          <svg
+            width="12"
+            height="8"
+            viewBox="0 0 12 8"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M1 1L6 6L11 1"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
         </div>
       </div>
@@ -222,18 +233,18 @@ const emit = defineEmits<{
   export: [];
 }>();
 
-const startAdjusting = (type: 'start' | 'end', delta: number) => {
+const startAdjusting = (type: "start" | "end", delta: number) => {
   // Clear any existing interval
   if (adjustmentInterval) {
     clearInterval(adjustmentInterval);
   }
-  
+
   // Start continuous adjustment after initial delay
   adjustmentInterval = window.setInterval(() => {
-    if (type === 'start') {
-      emit('adjust-start-time', delta);
+    if (type === "start") {
+      emit("adjust-start-time", delta);
     } else {
-      emit('adjust-end-time', delta);
+      emit("adjust-end-time", delta);
     }
   }, 100); // Adjust every 100ms
 };
@@ -247,25 +258,25 @@ const stopAdjusting = () => {
 
 // Parse time string (MM:SS.S format) to seconds
 const parseTimeString = (timeStr: string): number => {
-  const parts = timeStr.split(':');
+  const parts = timeStr.split(":");
   if (parts.length !== 2) return 0;
-  
+
   const minutes = parseInt(parts[0]) || 0;
   const seconds = parseFloat(parts[1]) || 0;
-  
+
   return minutes * 60 + seconds;
 };
 
 const updateStartTimeFromInput = (event: Event) => {
   const input = event.target as HTMLInputElement;
   const newTime = parseTimeString(input.value);
-  emit('set-start-time', newTime);
+  emit("set-start-time", newTime);
 };
 
 const updateEndTimeFromInput = (event: Event) => {
   const input = event.target as HTMLInputElement;
   const newTime = parseTimeString(input.value);
-  emit('set-end-time', newTime);
+  emit("set-end-time", newTime);
 };
 
 // Clean up on unmount

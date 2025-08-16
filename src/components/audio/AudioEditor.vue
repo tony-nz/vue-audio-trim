@@ -37,7 +37,7 @@
           :equalizer="equalizer"
           @update-volume="setVolume"
           @update-exported-volume="(v: any) => (exportedVolume = v)"
-          @update-speed="setSpeed"
+          @update-speed="(value: number) => setSpeed(wavesurfer, value)"
           @update-bitrate="(v: any) => (bitrate = v)"
           @update-equalizer="updateEqualizer"
           @reset-equalizer="resetEqualizer"
@@ -100,7 +100,7 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const emit = defineEmits<{
+defineEmits<{
   close: [];
 }>();
 
@@ -132,8 +132,6 @@ const {
   resetRegion,
   updateFadeIn,
   updateFadeOut,
-  fadeInEnabled: waveformFadeInEnabled,
-  fadeOutEnabled: waveformFadeOutEnabled,
 } = useWaveSurfer(props.rawAudio, props.rawAudioDuration);
 
 const {

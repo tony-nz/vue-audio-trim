@@ -41,7 +41,6 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
     // Calculate region positions in pixels
     const regionStartPixel = (region.value[0] / totalDuration) * width;
     const regionEndPixel = (region.value[1] / totalDuration) * width;
-    const regionWidth = regionEndPixel - regionStartPixel;
 
     // Calculate fade areas in pixels relative to the region
     const fadeInPixels = fadeInEnabled.value

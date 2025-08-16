@@ -45,8 +45,8 @@ A lightweight, open-source Vue.js component library for precise audio trimming, 
 
 ```bash
 # Clone the repository
-git clone https://github.com/tony-nz/vue-waveform-editor.git
-cd vue-waveform-editor
+git clone https://github.com/tony-nz/vue-audio-trim.git
+cd vue-audio-trim
 
 # Install dependencies
 npm install

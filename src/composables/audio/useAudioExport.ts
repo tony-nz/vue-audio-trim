@@ -83,13 +83,15 @@ export function useAudioExport() {
       }
 
       const hasEqChanges = equalizer.some((eq) => eq.value !== 0);
+      let finalBuffer = newBuffer;
 
       if (hasEqChanges) {
-        const renderedBuffer = await applyEqualizer(newBuffer, equalizer);
-        await downloadAsMp3(renderedBuffer, customFilename || rawAudio.name, bitrate);
-      } else {
-        await downloadAsMp3(newBuffer, customFilename || rawAudio.name, bitrate);
+        finalBuffer = await applyEqualizer(newBuffer, equalizer);
       }
+
+      // Export as MP3 (only supported format for now)
+      const filename = customFilename || rawAudio.name;
+      await downloadAsMp3(finalBuffer, filename, bitrate);
     } catch (error) {
       console.error("Export failed:", error);
       alert("Export failed. Please try again.");
@@ -134,6 +136,8 @@ export function useAudioExport() {
 
     return await offlineContext.startRendering();
   };
+
+
 
   const downloadAsMp3 = async (
     audioBuffer: AudioBuffer,
@@ -227,6 +231,7 @@ export function useAudioExport() {
 
     return new Blob(mp3Data, { type: "audio/mp3" });
   };
+
 
   return {
     exportFormat,
