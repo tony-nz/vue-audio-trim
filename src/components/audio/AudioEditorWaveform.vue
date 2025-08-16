@@ -7,7 +7,9 @@
         class="absolute inset-0 flex items-center justify-center bg-slate-800 bg-opacity-90 rounded z-20"
       >
         <div class="flex flex-col items-center space-y-3">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+          <div
+            class="animate-spin rounded-full h-12 w-12 border-b-2 border-white"
+          ></div>
           <p class="text-white text-sm font-medium">Loading audio track...</p>
         </div>
       </div>

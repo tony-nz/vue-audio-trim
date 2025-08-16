@@ -10,17 +10,17 @@
     <div class="dialog-content">
       <slot />
     </div>
-    
+
     <template #footer>
-      <Button 
+      <Button
         v-if="!hideCloseButton"
-        label="Cancel" 
-        icon="pi pi-times" 
+        label="Cancel"
+        icon="pi pi-times"
         @click="$emit('close')"
         class="p-button-text"
       />
-      <Button 
-        :label="confirmText" 
+      <Button
+        :label="confirmText"
         :icon="type === 'delete' ? 'pi pi-check' : 'pi pi-check'"
         :severity="type === 'delete' ? 'danger' : 'primary'"
         :loading="confirmLoading"
@@ -33,55 +33,55 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import Dialog from 'primevue/dialog'
-import Button from 'primevue/button'
+import { defineComponent } from "vue";
+import Dialog from "primevue/dialog";
+import Button from "primevue/button";
 
 export default defineComponent({
-  name: 'BaseDialog',
-  
+  name: "BaseDialog",
+
   components: {
     Dialog,
-    Button
+    Button,
   },
-  
+
   props: {
     modelValue: {
       type: Boolean,
-      default: false
+      default: false,
     },
     title: {
       type: String,
-      default: ''
+      default: "",
     },
     type: {
       type: String,
-      default: 'default'
+      default: "default",
     },
     confirmText: {
       type: String,
-      default: 'Confirm'
+      default: "Confirm",
     },
     confirmClasses: {
       type: String,
-      default: ''
+      default: "",
     },
     confirmLoading: {
       type: Boolean,
-      default: false
+      default: false,
     },
     hideCloseButton: {
       type: Boolean,
-      default: false
+      default: false,
     },
     hideCloseIcon: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  
-  emits: ['update:modelValue', 'close', 'confirm']
-})
+
+  emits: ["update:modelValue", "close", "confirm"],
+});
 </script>
 
 <style scoped>

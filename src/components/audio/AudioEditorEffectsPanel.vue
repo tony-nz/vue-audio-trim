@@ -12,7 +12,7 @@
         @update:model-value="$emit('update-exported-volume', $event)"
       />
     </div>
-    
+
     <div v-show="selectedAction === 'speed'" class="space-y-4">
       <div class="text-center text-gray-300">
         Average BPM ~{{
@@ -31,7 +31,7 @@
         @update:model-value="$emit('update-speed', $event)"
       />
     </div>
-    
+
     <div v-show="selectedAction === 'bitrate'" class="space-y-4">
       <AudioEditorSlider
         :model-value="bitrate"
@@ -41,11 +41,8 @@
         @update:model-value="$emit('update-bitrate', $event)"
       />
     </div>
-    
-    <div
-      v-show="selectedAction === 'equalizer'"
-      class="flex flex-row gap-4"
-    >
+
+    <div v-show="selectedAction === 'equalizer'" class="flex flex-row gap-4">
       <div class="flex flex-row gap-2">
         <AudioEditorSlider
           v-for="(item, index) in equalizer"
@@ -72,9 +69,9 @@
 </template>
 
 <script setup lang="ts">
-import AudioEditorSliderVolume from './AudioEditorSliderVolume.vue';
-import AudioEditorSlider from './AudioEditorSlider.vue';
-import type { EqItem } from '../../composables/audio/useAudioEffects';
+import AudioEditorSliderVolume from "./AudioEditorSliderVolume.vue";
+import AudioEditorSlider from "./AudioEditorSlider.vue";
+import type { EqItem } from "../../composables/audio/useAudioEffects";
 
 interface MusicInfo {
   tempo?: number;
@@ -91,11 +88,11 @@ defineProps<{
 }>();
 
 defineEmits<{
-  'update-volume': [value: number];
-  'update-exported-volume': [value: number];
-  'update-speed': [value: number];
-  'update-bitrate': [value: number];
-  'update-equalizer': [value: number, index: number];
-  'reset-equalizer': [];
+  "update-volume": [value: number];
+  "update-exported-volume": [value: number];
+  "update-speed": [value: number];
+  "update-bitrate": [value: number];
+  "update-equalizer": [value: number, index: number];
+  "reset-equalizer": [];
 }>();
 </script>

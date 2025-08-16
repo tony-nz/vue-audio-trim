@@ -1,5 +1,5 @@
-import { ref, watch } from 'vue';
-import EnvelopePlugin from 'wavesurfer.js/dist/plugins/envelope.esm.js';
+import { ref } from "vue";
+import EnvelopePlugin from "wavesurfer.js/dist/plugins/envelope.esm.js";
 
 /**
  * Composable for managing WaveSurfer EnvelopePlugin to create smooth fade curves
@@ -15,11 +15,11 @@ export function useEnvelope() {
         { time: 0, volume: 1 },
         { time: 1, volume: 1 },
       ],
-      lineColor: 'rgba(255, 255, 255, 0.7)',
-      lineWidth: 2,
+      lineColor: "rgba(255, 255, 255, 0.7)",
+      lineWidth: "2",
       dragPointSize: 8,
-      dragPointFill: 'rgba(255, 255, 255, 0.9)',
-      dragPointStroke: 'rgba(255, 255, 255, 1)',
+      dragPointFill: "rgba(255, 255, 255, 0.9)",
+      dragPointStroke: "rgba(255, 255, 255, 1)",
     });
   };
 
@@ -65,8 +65,12 @@ export function useEnvelope() {
       points.push({ time: regionStart, volume: 1 });
     }
 
-    const fadeInEnd = fadeInEnabled ? regionStart + fadeInDuration : regionStart;
-    const fadeOutStart = fadeOutEnabled ? regionEnd - fadeOutDuration : regionEnd;
+    const fadeInEnd = fadeInEnabled
+      ? regionStart + fadeInDuration
+      : regionStart;
+    const fadeOutStart = fadeOutEnabled
+      ? regionEnd - fadeOutDuration
+      : regionEnd;
 
     if (fadeInEnd < fadeOutStart) {
       points.push({ time: fadeInEnd, volume: 1 });

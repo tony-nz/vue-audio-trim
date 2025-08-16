@@ -1,5 +1,5 @@
-import { ref } from 'vue';
-import MusicTempo from 'music-tempo';
+import { ref } from "vue";
+import MusicTempo from "music-tempo";
 
 interface EventTargetWithResult extends EventTarget {
   result: string;
@@ -23,7 +23,7 @@ export function useMusicTempo() {
       const result = target.result as unknown as ArrayBuffer;
       await context.decodeAudioData(result, (buffer: AudioBuffer) => {
         let audioData: number[] | Float32Array = [];
-        
+
         if (buffer.numberOfChannels === 2) {
           const channel1Data = buffer.getChannelData(0);
           const channel2Data = buffer.getChannelData(1);

@@ -46,7 +46,7 @@ defineProps<{
 }>();
 
 defineEmits<{
-  'select-action': [key: string];
+  "select-action": [key: string];
   reset: [];
   close: [];
 }>();

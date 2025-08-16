@@ -1,5 +1,9 @@
 <template>
-  <AudioEditorSlider :model-value="modelValue" v-bind="$attrs" @update:model-value="$emit('update:model-value', $event)">
+  <AudioEditorSlider
+    :model-value="modelValue"
+    v-bind="$attrs"
+    @update:model-value="$emit('update:model-value', $event)"
+  >
     <template #append>
       <i v-if="modelValue >= 60" class="pi pi-volume-up" />
       <i v-else-if="modelValue > 0" class="pi pi-volume-down" />
@@ -9,11 +13,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import AudioEditorSlider from './AudioEditorSlider.vue';
+import { defineComponent } from "vue";
+import AudioEditorSlider from "./AudioEditorSlider.vue";
 
 export default defineComponent({
-  name: 'AudioEditorSliderVolume',
+  name: "AudioEditorSliderVolume",
 
   components: { AudioEditorSlider },
 
@@ -24,7 +28,7 @@ export default defineComponent({
     },
   },
 
-  emits: ['update:model-value'],
+  emits: ["update:model-value"],
 
   setup() {
     return {};

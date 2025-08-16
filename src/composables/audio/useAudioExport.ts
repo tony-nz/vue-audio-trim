@@ -1,7 +1,7 @@
-import { ref } from 'vue';
+import { ref } from "vue";
 // @ts-ignore
-import lamejs from 'lamejs';
-import type { EqItem } from './useAudioEffects';
+import lamejs from "lamejs";
+import type { EqItem } from "./useAudioEffects";
 
 /**
  * Composable for audio processing and export functionality
@@ -9,7 +9,7 @@ import type { EqItem } from './useAudioEffects';
  * @returns Object containing export functions and loading state
  */
 export function useAudioExport() {
-  const exportFormat = ref('mp3');
+  const exportFormat = ref("mp3");
   const isExporting = ref(false);
 
   const exportAudio = async (
@@ -49,13 +49,21 @@ export function useAudioExport() {
         const originalChannelData = decodedData.getChannelData(channel);
         const newChannelData = newBuffer.getChannelData(channel);
 
-        for (let chunkStart = 0; chunkStart < newLength; chunkStart += chunkSize) {
+        for (
+          let chunkStart = 0;
+          chunkStart < newLength;
+          chunkStart += chunkSize
+        ) {
           const chunkEnd = Math.min(chunkStart + chunkSize, newLength);
 
           for (let i = chunkStart; i < chunkEnd; i++) {
             const originalIndex = startSample + Math.floor(i * speedMultiplier);
-            if (originalIndex < endSample && originalIndex < originalChannelData.length) {
-              let sample = originalChannelData[originalIndex] * volumeMultiplier;
+            if (
+              originalIndex < endSample &&
+              originalIndex < originalChannelData.length
+            ) {
+              let sample =
+                originalChannelData[originalIndex] * volumeMultiplier;
 
               if (envelopePlugin) {
                 const timePosition = i / decodedData.sampleRate;
@@ -82,14 +90,17 @@ export function useAudioExport() {
         await downloadAsMp3(newBuffer, rawAudio.name, bitrate);
       }
     } catch (error) {
-      console.error('Export failed:', error);
-      alert('Export failed. Please try again.');
+      console.error("Export failed:", error);
+      alert("Export failed. Please try again.");
     } finally {
       isExporting.value = false;
     }
   };
 
-  const applyEqualizer = async (buffer: AudioBuffer, equalizer: EqItem[]): Promise<AudioBuffer> => {
+  const applyEqualizer = async (
+    buffer: AudioBuffer,
+    equalizer: EqItem[]
+  ): Promise<AudioBuffer> => {
     const offlineContext = new OfflineAudioContext(
       buffer.numberOfChannels,
       buffer.length,
@@ -108,7 +119,7 @@ export function useAudioExport() {
         filter.frequency.value = eq.f;
         filter.gain.value = eq.value;
 
-        if (eq.type === 'peaking') {
+        if (eq.type === "peaking") {
           filter.Q.value = 1;
         }
 
@@ -123,24 +134,31 @@ export function useAudioExport() {
     return await offlineContext.startRendering();
   };
 
-  const downloadAsMp3 = async (audioBuffer: AudioBuffer, fileName: string, bitrate: number) => {
+  const downloadAsMp3 = async (
+    audioBuffer: AudioBuffer,
+    fileName: string,
+    bitrate: number
+  ) => {
     try {
       const mp3Blob = await audioBufferToMp3(audioBuffer, bitrate);
       const url = URL.createObjectURL(mp3Blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.download = `${fileName.replace(/\.[^/.]+$/, '')}_edited.mp3`;
+      link.download = `${fileName.replace(/\.[^/.]+$/, "")}_edited.mp3`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('MP3 conversion failed:', error);
-      alert('MP3 conversion failed. Please try again.');
+      console.error("MP3 conversion failed:", error);
+      alert("MP3 conversion failed. Please try again.");
     }
   };
 
-  const audioBufferToMp3 = async (buffer: AudioBuffer, bitrate: number): Promise<Blob> => {
+  const audioBufferToMp3 = async (
+    buffer: AudioBuffer,
+    bitrate: number
+  ): Promise<Blob> => {
     const sampleRate = buffer.sampleRate;
     const numberOfChannels = buffer.numberOfChannels;
     const length = buffer.length;
@@ -151,21 +169,31 @@ export function useAudioExport() {
       if (lamejs && lamejs.Mp3Encoder) {
         mp3encoder = new lamejs.Mp3Encoder(numberOfChannels, sampleRate, kbps);
       } else if ((window as any).lamejs) {
-        mp3encoder = new (window as any).lamejs.Mp3Encoder(numberOfChannels, sampleRate, kbps);
-      } else if (lamejs && typeof lamejs === 'function') {
+        mp3encoder = new (window as any).lamejs.Mp3Encoder(
+          numberOfChannels,
+          sampleRate,
+          kbps
+        );
+      } else if (lamejs && typeof lamejs === "function") {
         mp3encoder = new lamejs(numberOfChannels, sampleRate, kbps);
       } else {
-        const Mp3Encoder = (lamejs as any).Mp3Encoder || (lamejs as any).default?.Mp3Encoder || lamejs;
+        const Mp3Encoder =
+          (lamejs as any).Mp3Encoder ||
+          (lamejs as any).default?.Mp3Encoder ||
+          lamejs;
         mp3encoder = new Mp3Encoder(numberOfChannels, sampleRate, kbps);
       }
     } catch (e) {
-      console.error('Failed to initialize Mp3Encoder:', e);
-      console.error('lamejs structure:', lamejs);
-      throw new Error('MP3 encoder initialization failed. The library may not be loaded correctly.');
+      console.error("Failed to initialize Mp3Encoder:", e);
+      console.error("lamejs structure:", lamejs);
+      throw new Error(
+        "MP3 encoder initialization failed. The library may not be loaded correctly."
+      );
     }
 
     const leftChannel = buffer.getChannelData(0);
-    const rightChannel = numberOfChannels > 1 ? buffer.getChannelData(1) : leftChannel;
+    const rightChannel =
+      numberOfChannels > 1 ? buffer.getChannelData(1) : leftChannel;
     const sampleBlockSize = 1152;
     const mp3Data: ArrayBuffer[] = [];
 
@@ -196,7 +224,7 @@ export function useAudioExport() {
       mp3Data.push(new Uint8Array(mp3buf).buffer);
     }
 
-    return new Blob(mp3Data, { type: 'audio/mp3' });
+    return new Blob(mp3Data, { type: "audio/mp3" });
   };
 
   return {

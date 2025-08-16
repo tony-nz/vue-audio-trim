@@ -1,8 +1,8 @@
-# Vue MP3 Editor Pro
+# VueAudioTrim
 
-A professional-grade audio editor built with Vue 3, TypeScript, and WaveSurfer.js. Features a beautiful landing page design with an embedded audio editor for cutting, fading, volume control, and BPM adjustment.
+A lightweight, open-source Vue.js component library for precise audio trimming, built on WaveSurfer.js. VueAudioTrim enables developers to seamlessly integrate intuitive audio editing into their projects. With millisecond-precision trimming, customizable fade effects, real-time volume control, tempo and BPM adjustments without pitch distortion, and multi-format export, it’s designed for efficiency and flexibility. Its real-time visual waveform interface empowers developers to create polished audio applications with ease, no prior audio expertise required.This description targets developers unfamiliar with WaveSurfer.js, emphasizing the trimming focus, key features (precision trimming, fade effects, volume control, BPM adjustment, easy export), and the Vue framework’s integration. It’s concise, highlights the tool’s accessibility, and positions it as a developer-friendly solution. Let me know if you want to adjust the tone, length, or add specific details!
 
-![Vue MP3 Editor Pro](https://img.shields.io/badge/Vue-3.x-4FC08D?style=flat-square&logo=vue.js&logoColor=white)
+![VueAudioTrim](https://img.shields.io/badge/Vue-3.x-4FC08D?style=flat-square&logo=vue.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![WaveSurfer.js](https://img.shields.io/badge/WaveSurfer.js-7.x-FF6B6B?style=flat-square)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)
@@ -10,6 +10,7 @@ A professional-grade audio editor built with Vue 3, TypeScript, and WaveSurfer.j
 ## ✨ Features
 
 ### Core Audio Editing
+
 - **Precision Cutting**: Cut and trim audio with millisecond precision using visual waveform editing
 - **Fade Effects**: Apply smooth fade in/out effects with customizable exponential curves
 - **Volume Control**: Adjust volume levels with precision mixing controls and real-time preview
@@ -18,6 +19,7 @@ A professional-grade audio editor built with Vue 3, TypeScript, and WaveSurfer.j
 - **Multiple Export Formats**: Export to MP3, WAV, FLAC, and OGG formats
 
 ### User Interface
+
 - **Beautiful Landing Page**: Professional gradient design with animated wave bars
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
 - **Real-time Waveform**: Visual representation of audio with region selection
@@ -25,6 +27,7 @@ A professional-grade audio editor built with Vue 3, TypeScript, and WaveSurfer.j
 - **Dark Theme**: Modern dark interface optimized for long editing sessions
 
 ### Technical Features
+
 - **Vue 3 Composition API**: Built with modern Vue.js patterns and TypeScript
 - **Modular Architecture**: Composables-based architecture for maintainability
 - **WaveSurfer.js Integration**: Advanced audio visualization and manipulation
@@ -34,7 +37,8 @@ A professional-grade audio editor built with Vue 3, TypeScript, and WaveSurfer.j
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 16+ 
+
+- Node.js 16+
 - npm or yarn
 
 ### Installation
@@ -96,6 +100,7 @@ src/
 ### Key Composables
 
 #### `useWaveSurfer.ts`
+
 Manages WaveSurfer instance, region selection, and playback controls.
 
 ```typescript
@@ -108,6 +113,7 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
 ```
 
 #### `useAudioEffects.ts`
+
 Handles all audio effects including volume, speed, equalizer, and fade controls.
 
 ```typescript
@@ -121,15 +127,16 @@ export function useAudioEffects() {
 ```
 
 #### `useEnvelope.ts`
+
 Manages the WaveSurfer EnvelopePlugin for smooth fade curves.
 
 ```typescript
 export function useEnvelope() {
   const envelopePlugin = ref<any>(null);
-  
+
   const updateEnvelopePoints = (wavesurfer, region, fadeIn, fadeOut) => {
     // Exponential fade curve calculations
-    const fadeInCurve = Array.from({length: 50}, (_, i) => {
+    const fadeInCurve = Array.from({ length: 50 }, (_, i) => {
       const t = i / 49;
       return Math.exp(4 * t - 4); // Exponential curve
     });
@@ -156,27 +163,30 @@ export function useEnvelope() {
 ### Advanced Features
 
 #### Fade Curves
+
 The editor uses exponential fade curves for natural-sounding fades:
 
 ```typescript
 // Fade in curve (exponential growth)
 const fadeInVolume = Math.exp(4 * progress - 4);
 
-// Fade out curve (exponential decay)  
+// Fade out curve (exponential decay)
 const fadeOutVolume = Math.exp(-4 * progress);
 ```
 
 #### BPM Detection
+
 Uses advanced audio analysis to detect BPM and allow tempo changes:
 
 ```typescript
 const musicInfo = await decodeAndSetMusicInfo(audioFile);
-setSpeed(wavesurfer, newBPM / originalBPM * 100);
+setSpeed(wavesurfer, (newBPM / originalBPM) * 100);
 ```
 
 ## 🛠️ Development
 
 ### Code Style
+
 - **Vue 3 Composition API**: All components use `<script setup>` syntax
 - **TypeScript**: Strict typing throughout the codebase
 - **ESLint + Prettier**: Automated code formatting and linting
@@ -190,15 +200,16 @@ setSpeed(wavesurfer, newBPM / originalBPM * 100);
 4. Add UI controls in the appropriate component
 
 Example:
+
 ```typescript
 // src/composables/audio/useReverb.ts
 export function useReverb() {
   const reverbAmount = ref(0);
-  
+
   const applyReverb = (audioContext, audioBuffer) => {
     // Reverb implementation
   };
-  
+
   return { reverbAmount, applyReverb };
 }
 ```
@@ -206,16 +217,19 @@ export function useReverb() {
 ## 📦 Dependencies
 
 ### Core Dependencies
+
 - **Vue 3**: Progressive JavaScript framework
 - **TypeScript**: Static type checking
 - **WaveSurfer.js**: Audio visualization and manipulation
 - **Vite**: Fast build tool and dev server
 
 ### Audio Processing
+
 - **lamejs**: MP3 encoding in the browser
 - **music-tempo**: BPM detection library
 
 ### UI/Styling
+
 - **Tailwind CSS**: Utility-first CSS framework
 - **Font Awesome**: Icon library
 
@@ -228,6 +242,7 @@ export function useReverb() {
 5. Open a Pull Request
 
 ### Development Guidelines
+
 - Follow the existing code style and patterns
 - Add TypeScript types for all new code
 - Write unit tests for new features

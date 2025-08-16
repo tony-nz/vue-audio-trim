@@ -2,7 +2,7 @@
   <div class="w-full">
     <div class="player-bg rounded-lg shadow-2xl w-full">
       <!-- Header Controls -->
-      <AudioEditorHeader 
+      <AudioEditorHeader
         :actions="actions"
         :selected-action="selectedAction"
         @select-action="selectAction"
@@ -14,7 +14,9 @@
       <div class="p-6">
         <!-- Time display in corner -->
         <div class="relative mb-4">
-          <div class="absolute top-0 left-0 bg-white text-slate-800 px-3 py-1 rounded-full text-sm font-medium">
+          <div
+            class="absolute top-0 left-0 bg-white text-slate-800 px-3 py-1 rounded-full text-sm font-medium"
+          >
             {{ formatTime(currentTime) }}
           </div>
         </div>
@@ -25,7 +27,7 @@
         </div>
 
         <!-- Waveform Area -->
-        <AudioEditorWaveform 
+        <AudioEditorWaveform
           :region="region"
           :cursor-position="cursorPosition"
           :cursor-time="cursorTime"
@@ -45,9 +47,9 @@
           :bitrate="bitrate"
           :equalizer="equalizer"
           @update-volume="setVolume"
-          @update-exported-volume="(v) => exportedVolume = v"
+          @update-exported-volume="(v) => (exportedVolume = v)"
           @update-speed="setSpeed"
-          @update-bitrate="(v) => bitrate = v"
+          @update-bitrate="(v) => (bitrate = v)"
           @update-equalizer="updateEqualizer"
           @reset-equalizer="resetEqualizer"
         />
@@ -68,7 +70,7 @@
           @adjust-start-time="adjustStartTime"
           @adjust-end-time="adjustEndTime"
           @export="handleExport"
-          @update-export-format="(v) => exportFormat = v"
+          @update-export-format="(v: any) => (exportFormat = v)"
         />
       </div>
     </div>
@@ -84,20 +86,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
-import { useWaveSurfer } from '../../composables/audio/useWaveSurfer';
-import { useAudioEffects } from '../../composables/audio/useAudioEffects';
-import { useAudioExport } from '../../composables/audio/useAudioExport';
-import { useEnvelope } from '../../composables/audio/useEnvelope';
-import { useMusicTempo } from '../../composables/audio/useMusicTempo';
-import { formatTime, handleKeyPress } from '../../utils/audioUtils';
-import useDialog from '../../composables/common/useDialog';
+import { ref, watch, onMounted, onBeforeUnmount } from "vue";
+import { useWaveSurfer } from "../../composables/audio/useWaveSurfer";
+import { useAudioEffects } from "../../composables/audio/useAudioEffects";
+import { useAudioExport } from "../../composables/audio/useAudioExport";
+import { useEnvelope } from "../../composables/audio/useEnvelope";
+import { useMusicTempo } from "../../composables/audio/useMusicTempo";
+import { formatTime, handleKeyPress } from "../../utils/audioUtils";
+import useDialog from "../../composables/common/useDialog";
 
-import AudioEditorHeader from './AudioEditorHeader.vue';
-import AudioEditorWaveform from './AudioEditorWaveform.vue';
-import AudioEditorEffectsPanel from './AudioEditorEffectsPanel.vue';
-import AudioEditorControls from './AudioEditorControls.vue';
-import AudioEditorDialogs from './AudioEditorDialogs.vue';
+import AudioEditorHeader from "./AudioEditorHeader.vue";
+import AudioEditorWaveform from "./AudioEditorWaveform.vue";
+import AudioEditorEffectsPanel from "./AudioEditorEffectsPanel.vue";
+import AudioEditorControls from "./AudioEditorControls.vue";
+import AudioEditorDialogs from "./AudioEditorDialogs.vue";
 
 interface Props {
   rawAudio: File;
@@ -112,19 +114,22 @@ const emit = defineEmits<{
 // Composables
 const dialog = useDialog();
 const { isTempoLoading, musicInfo, decodeAndSetMusicInfo } = useMusicTempo();
-const { envelopePlugin, createEnvelopePlugin, updateEnvelopePoints, getEnvelopeVolumeAtTime } = useEnvelope();
+const {
+  envelopePlugin,
+  createEnvelopePlugin,
+  updateEnvelopePoints,
+  getEnvelopeVolumeAtTime,
+} = useEnvelope();
 const { exportFormat, isExporting, exportAudio } = useAudioExport();
 
 const {
   wavesurfer,
-  regionsPlugin,
   isPlaying,
   currentTime,
   cursorPosition,
   cursorTime,
   region,
   isLoading,
-  updateExportRegion,
   handlePlayPause,
   adjustStartTime,
   adjustEndTime,
@@ -154,26 +159,26 @@ const {
 
 // Actions and selections
 const actions = [
-  { tooltip: 'Volume', key: 'volume', icon: 'volume-up' },
-  { tooltip: 'Speed', key: 'speed', icon: 'tachometer-alt' },
-  { tooltip: 'Bitrate', key: 'bitrate', icon: 'wave-square' },
-  { tooltip: 'Equalizer', key: 'equalizer', icon: 'sliders-h' },
+  { tooltip: "Volume", key: "volume", icon: "volume-up" },
+  { tooltip: "Speed", key: "speed", icon: "tachometer-alt" },
+  { tooltip: "Bitrate", key: "bitrate", icon: "wave-square" },
+  { tooltip: "Equalizer", key: "equalizer", icon: "sliders-h" },
 ];
 
-const selectedAction = ref('volume');
+const selectedAction = ref("volume");
 
 const selectAction = (key: string) => {
   selectedAction.value = key;
-  if (key === 'speed') {
+  if (key === "speed") {
     wavesurfer.value?.pause();
-    dialog.open('findBPM');
+    dialog.open("findBPM");
     decodeAndSetMusicInfo(props.rawAudio, dialog);
   }
 };
 
 const showCloseAudioDialog = () => {
   wavesurfer.value?.pause();
-  dialog.open('closeConfirm');
+  dialog.open("closeConfirm");
 };
 
 const resetAll = () => {
@@ -214,32 +219,35 @@ watch([fadeInDuration, fadeOutDuration], () => {
   );
 });
 
-// Override the updateExportRegion to also update envelope
-const originalUpdateExportRegion = updateExportRegion;
-watch(region, () => {
-  updateEnvelopePoints(
-    wavesurfer.value,
-    region.value,
-    fadeInEnabled.value,
-    fadeInDuration.value,
-    fadeOutEnabled.value,
-    fadeOutDuration.value
-  );
-}, { deep: true });
+// Watch for region changes to update envelope points
+watch(
+  region,
+  () => {
+    updateEnvelopePoints(
+      wavesurfer.value,
+      region.value,
+      fadeInEnabled.value,
+      fadeInDuration.value,
+      fadeOutEnabled.value,
+      fadeOutDuration.value
+    );
+  },
+  { deep: true }
+);
 
 // Initialize envelope
 onMounted(() => {
   createEnvelopePlugin();
   setVolume(wavesurfer.value, 100);
-  
+
   const keyHandler = (event: KeyboardEvent) => {
     handleKeyPress(event, handlePlayPause, wavesurfer.value);
   };
-  
-  addEventListener('keydown', keyHandler);
-  
+
+  addEventListener("keydown", keyHandler);
+
   onBeforeUnmount(() => {
-    removeEventListener('keydown', keyHandler);
+    removeEventListener("keydown", keyHandler);
   });
 });
 </script>

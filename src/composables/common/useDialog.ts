@@ -1,19 +1,19 @@
-import { ref } from 'vue'
+import { ref } from "vue";
 
 export default function useDialog() {
-  const openedName = ref('')
-  
+  const openedName = ref("");
+
   function open(name: string) {
-    openedName.value = name
+    openedName.value = name;
   }
-  
+
   function close() {
-    openedName.value = ''
+    openedName.value = "";
   }
-  
+
   return {
     openedName,
     open,
-    close
-  }
+    close,
+  };
 }

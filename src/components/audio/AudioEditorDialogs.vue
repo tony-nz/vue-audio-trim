@@ -11,7 +11,7 @@
     >
       Please wait 5-20 seconds
     </BaseDialog>
-    
+
     <BaseDialog
       type="delete"
       title="Close current audio"
@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import BaseDialog from '../common/BaseDialog.vue';
+import BaseDialog from "../common/BaseDialog.vue";
 
 defineProps<{
   dialog: any;
@@ -35,6 +35,6 @@ defineProps<{
 
 defineEmits<{
   close: [];
-  'confirm-close': [];
+  "confirm-close": [];
 }>();
 </script>

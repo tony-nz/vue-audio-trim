@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue';
+import { ref } from "vue";
 
 /**
  * Interface for equalizer band configuration
@@ -26,16 +26,16 @@ export function useAudioEffects() {
 
   // Equalizer
   const equalizer = ref<EqItem[]>([
-    { f: 32, type: 'lowshelf', value: 0 },
-    { f: 64, type: 'peaking', value: 0 },
-    { f: 125, type: 'peaking', value: 0 },
-    { f: 250, type: 'peaking', value: 0 },
-    { f: 500, type: 'peaking', value: 0 },
-    { f: 1000, type: 'peaking', value: 0 },
-    { f: 2000, type: 'peaking', value: 0 },
-    { f: 4000, type: 'peaking', value: 0 },
-    { f: 8000, type: 'peaking', value: 0 },
-    { f: 16000, type: 'highshelf', value: 0 },
+    { f: 32, type: "lowshelf", value: 0 },
+    { f: 64, type: "peaking", value: 0 },
+    { f: 125, type: "peaking", value: 0 },
+    { f: 250, type: "peaking", value: 0 },
+    { f: 500, type: "peaking", value: 0 },
+    { f: 1000, type: "peaking", value: 0 },
+    { f: 2000, type: "peaking", value: 0 },
+    { f: 4000, type: "peaking", value: 0 },
+    { f: 8000, type: "peaking", value: 0 },
+    { f: 16000, type: "highshelf", value: 0 },
   ]);
 
   // Fade controls
@@ -93,19 +93,19 @@ export function useAudioEffects() {
     volume,
     exportedVolume,
     setVolume,
-    
+
     // Speed
     speed,
     setSpeed,
-    
+
     // Bitrate
     bitrate,
-    
+
     // Equalizer
     equalizer,
     updateEqualizer,
     resetEqualizer,
-    
+
     // Fades
     fadeInEnabled,
     fadeInDuration,
@@ -115,7 +115,7 @@ export function useAudioEffects() {
     toggleFadeIn,
     toggleFadeOut,
     toggleTrimMode,
-    
+
     // Reset
     resetAll,
   };

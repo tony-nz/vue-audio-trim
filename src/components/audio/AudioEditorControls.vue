@@ -133,7 +133,12 @@
       <!-- Format Dropdown -->
       <select
         :value="exportFormat"
-        @change="$emit('update-export-format', ($event.target as HTMLSelectElement).value)"
+        @change="
+          $emit(
+            'update-export-format',
+            ($event.target as HTMLSelectElement).value
+          )
+        "
         class="bg-slate-800 rounded-2xl text-white font-bold px-8 py-3 text-center cursor-pointer hover:bg-slate-600 focus:outline-none"
       >
         <option value="mp3">mp3</option>
@@ -149,7 +154,9 @@
       >
         <span v-if="!isExporting">Save</span>
         <div v-else class="flex items-center space-x-2">
-          <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-800"></div>
+          <div
+            class="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-800"
+          ></div>
           <span>Exporting...</span>
         </div>
       </button>
@@ -158,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import { formatTime } from '../../utils/audioUtils';
+import { formatTime } from "../../utils/audioUtils";
 
 defineProps<{
   isPlaying: boolean;
@@ -171,13 +178,13 @@ defineProps<{
 }>();
 
 defineEmits<{
-  'play-pause': [];
-  'toggle-fade-in': [];
-  'toggle-fade-out': [];
-  'toggle-trim-mode': [];
-  'adjust-start-time': [delta: number];
-  'adjust-end-time': [delta: number];
-  'update-export-format': [format: string];
-  'export': [];
+  "play-pause": [];
+  "toggle-fade-in": [];
+  "toggle-fade-out": [];
+  "toggle-trim-mode": [];
+  "adjust-start-time": [delta: number];
+  "adjust-end-time": [delta: number];
+  "update-export-format": [format: string];
+  export: [];
 }>();
 </script>

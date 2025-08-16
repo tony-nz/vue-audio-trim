@@ -44,7 +44,7 @@ export default defineComponent({
     }
 
     function setImage($event: Event) {
-      const file = (<HTMLInputElement>$event.target)?.files?.[0];
+      const file = ($event.target as HTMLInputElement)?.files?.[0];
       if (!file) return;
       if (file.type.indexOf(props.accept.split("/")[0]) === -1) return;
       if (typeof FileReader !== "function")
@@ -52,16 +52,6 @@ export default defineComponent({
 
       const audio = document.createElement("audio");
       const reader = new FileReader();
-
-      // reader.onload = ($readerEvent: Event) => {
-      //   const target = $readerEvent.target as EventTarget & { result: string };
-      //
-      //   const image = new Image();
-      //   image.src = target.result;
-      //   image.onload = () => {
-      //     emit('set-image', { image: target.result, width: image.width, height: image.height });
-      //   };
-      // };
 
       reader.onload = ($event: Event) => {
         const target = $event.target as EventTargetWithResult;

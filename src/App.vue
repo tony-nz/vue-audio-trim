@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import AudioWelcome from "./components/audio/AudioWelcome.vue";
-import AudioEditor from "./components/audio/AudioEditor.vue";
 
 const rawAudio = ref<File | null>(null);
 const rawAudioDuration = ref(0);
