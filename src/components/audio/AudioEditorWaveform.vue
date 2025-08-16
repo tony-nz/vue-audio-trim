@@ -1,5 +1,7 @@
 <template>
-  <div class="waveform-container rounded p-4 mb-6 overflow-visible">
+  <div
+    class="waveform-container bg-dark-player rounded-lg p-5 mb-6 overflow-visible shadow-md border border-dark-player-border"
+  >
     <div class="relative overflow-visible">
       <!-- Loading Spinner Overlay -->
       <div
@@ -18,33 +20,30 @@
         <span>{{ formatTime(region[1]) }}</span>
       </div>
       <div class="relative px-4">
-        <div id="waveform" class="relative"></div>
-        <div ref="timelineRef" id="wave-timeline" class="mt-4" />
-
-        <!-- Dark overlays for excluded areas -->
-        <div
-          v-if="wavesurfer && region"
-          class="absolute top-0 left-0 right-0 bottom-0 pointer-events-none"
-        >
-          <!-- Left overlay (before cut start) -->
+        <div id="waveform" class="relative">
+          <!-- Dark overlays for excluded areas (inside waveform only) -->
           <div
-            class="absolute top-0 left-0 bottom-0 bg-black bg-opacity-60 transition-all duration-300"
-            :style="{
-              width: getRegionPixelPosition(region[0], wavesurfer) + 'px',
-            }"
-          ></div>
+            v-if="wavesurfer && region"
+            class="absolute top-0 left-0 right-0 h-full pointer-events-none z-[5]"
+          >
+            <!-- Left overlay (before cut start) -->
+            <div
+              class="absolute top-0 left-0 h-full bg-black bg-opacity-50 transition-all duration-300"
+              :style="{
+                width: Math.max(0, getRegionPixelPosition(region[0], wavesurfer) - 3) + 'px',
+              }"
+            ></div>
 
-          <!-- Right overlay (after cut end) -->
-          <div
-            class="absolute top-0 right-0 bottom-0 bg-black bg-opacity-50 transition-all duration-300"
-            :style="{
-              width:
-                getWaveformWidth() -
-                getRegionPixelPosition(region[1], wavesurfer) +
-                'px',
-            }"
-          ></div>
+            <!-- Right overlay (after cut end) -->
+            <div
+              class="absolute top-0 right-0 h-full bg-black bg-opacity-50 transition-all duration-300"
+              :style="{
+                width: Math.max(0, getWaveformWidth() - getRegionPixelPosition(region[1], wavesurfer) - 3) + 'px',
+              }"
+            ></div>
+          </div>
         </div>
+        <div ref="timelineRef" id="wave-timeline" class="mt-4" />
 
         <!-- Cursor time marker -->
         <div

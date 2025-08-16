@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-6 bg-slate-700 bg-opacity-50 rounded p-4">
+  <div class="mb-6 bg-dark-player-light rounded-lg p-4 border border-dark-player-border">
     <div v-show="selectedAction === 'volume'" class="space-y-4">
       <AudioEditorSliderVolume
         :model-value="volume"

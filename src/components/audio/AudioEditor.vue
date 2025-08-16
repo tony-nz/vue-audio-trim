@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <div class="player-bg rounded-lg shadow-2xl w-full">
+    <div class="rounded-lg shadow-2xl w-full">
       <!-- Header Controls -->
       <AudioEditorHeader
         :actions="actions"

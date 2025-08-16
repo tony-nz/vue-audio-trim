@@ -3,7 +3,7 @@
     <div class="flex items-center space-x-3 w-full">
       <!-- Play Button -->
       <button
-        class="text-gray-300 hover:text-white p-2 bg-slate-800 rounded-2xl transition-colors p-3 px-10"
+        class="text-gray-300 hover:text-white p-2 bg-dark-player-light border border-dark-player-border rounded-2xl transition-colors p-3 px-10"
         @click="$emit('play-pause')"
       >
         <i v-if="isPlaying" class="fas fa-pause text-xl"></i>
@@ -14,11 +14,11 @@
       <div class="flex items-center">
         <div class="flex items-center">
           <button
-            class="transition-all bg-slate-800 rounded-l-2xl p-4 pl-4 pr-2"
+            class="transition-all bg-dark-player-light border border-dark-player-border border-r-0 rounded-l-2xl p-4 pl-4 pr-2"
             :class="
               fadeInEnabled
-                ? 'bg-slate-600 text-white'
-                : 'text-gray-300 hover:text-white hover:bg-slate-900'
+                ? 'bg-dark-player text-white'
+                : 'text-gray-300 hover:text-white hover:bg-dark-player-dark'
             "
             @click="$emit('toggle-fade-in')"
             title="Fade In"
@@ -41,11 +41,11 @@
             </svg>
           </button>
           <button
-            class="transition-all bg-slate-800 rounded-r-2xl p-4 pl-2 pr-4"
+            class="transition-all bg-dark-player-light border border-dark-player-border border-l-0 rounded-r-2xl p-4 pl-2 pr-4"
             :class="
               fadeOutEnabled
-                ? 'bg-slate-600 text-white'
-                : 'text-gray-300 hover:text-white hover:bg-slate-900'
+                ? 'bg-dark-player text-white'
+                : 'text-gray-300 hover:text-white hover:bg-dark-player-dark'
             "
             @click="$emit('toggle-fade-out')"
             title="Fade Out"
@@ -83,7 +83,7 @@
       <!-- Start Time with Arrows -->
       <div class="flex">
         <div
-          class="flex items-center space-x-2 bg-slate-800 p-2 pl-6 rounded-l-2xl"
+          class="flex items-center space-x-2 bg-dark-player-light border border-dark-player-border border-r-0 p-2 pl-6 rounded-l-2xl"
         >
           <span class="text-white font-bold text-sm">{{
             formatTime(region[0])
@@ -106,7 +106,7 @@
 
         <!-- End Time with Arrows -->
         <div
-          class="flex items-center space-x-2 bg-slate-800 p-2 pr-6 rounded-r-2xl"
+          class="flex items-center space-x-2 bg-dark-player-light border border-dark-player-border border-l-0 p-2 pr-6 rounded-r-2xl"
         >
           <span class="text-white font-bold text-sm">{{
             formatTime(region[1])
@@ -139,7 +139,7 @@
             ($event.target as HTMLSelectElement).value
           )
         "
-        class="bg-slate-800 rounded-2xl text-white font-bold px-8 py-3 text-center cursor-pointer hover:bg-slate-600 focus:outline-none"
+        class="bg-dark-player-light border border-dark-player-border rounded-2xl text-white font-bold px-8 py-3 text-center cursor-pointer hover:bg-dark-player focus:outline-none"
       >
         <option value="mp3">mp3</option>
         <option value="wav">wav</option>
