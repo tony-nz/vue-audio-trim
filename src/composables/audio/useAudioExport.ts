@@ -67,7 +67,7 @@ export function useAudioExport() {
                 originalChannelData[originalIndex] * volumeMultiplier;
 
               if (envelopePlugin) {
-                const timePosition = i / decodedData.sampleRate;
+                const timePosition = startTime + (i / decodedData.sampleRate);
                 const envelopeVolume = getEnvelopeVolumeAtTime(timePosition);
                 sample *= envelopeVolume;
               }
