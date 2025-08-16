@@ -55,8 +55,8 @@
           :is-exporting="isExporting"
           @play-pause="handlePlayPause"
           @stop="handleStop"
-          @toggle-fade-in="toggleFadeIn"
-          @toggle-fade-out="toggleFadeOut"
+          @toggle-fade-in="handleToggleFadeIn"
+          @toggle-fade-out="handleToggleFadeOut"
           @toggle-trim-mode="toggleTrimMode"
           @adjust-start-time="adjustStartTime"
           @adjust-end-time="adjustEndTime"
@@ -130,6 +130,10 @@ const {
   setStartTime,
   setEndTime,
   resetRegion,
+  updateFadeIn,
+  updateFadeOut,
+  fadeInEnabled: waveformFadeInEnabled,
+  fadeOutEnabled: waveformFadeOutEnabled,
 } = useWaveSurfer(props.rawAudio, props.rawAudioDuration);
 
 const {
@@ -189,6 +193,18 @@ const applyEqPreset = (presetValues: number[]) => {
   });
 };
 
+const handleToggleFadeIn = () => {
+  toggleFadeIn();
+  // Update waveform visualization
+  updateFadeIn(fadeInEnabled.value, fadeInDuration.value);
+};
+
+const handleToggleFadeOut = () => {
+  toggleFadeOut();
+  // Update waveform visualization
+  updateFadeOut(fadeOutEnabled.value, fadeOutDuration.value);
+};
+
 const resetAll = () => {
   resetEffects(wavesurfer.value);
   resetRegion();
@@ -226,6 +242,10 @@ watch([fadeInDuration, fadeOutDuration], () => {
     fadeOutEnabled.value,
     fadeOutDuration.value
   );
+  
+  // Update waveform visualization when fade durations change
+  updateFadeIn(fadeInEnabled.value, fadeInDuration.value);
+  updateFadeOut(fadeOutEnabled.value, fadeOutDuration.value);
 });
 
 // Watch for region changes to update envelope points

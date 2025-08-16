@@ -19,6 +19,76 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
   const region = ref([0, rawAudioDuration]);
   const isLoading = ref(true);
 
+  // Fade effect state
+  const fadeInEnabled = ref(false);
+  const fadeOutEnabled = ref(false);
+  const fadeInDuration = ref(1.0);
+  const fadeOutDuration = ref(1.0);
+
+  // Custom renderer function for fade effects
+  const customRenderer = (
+    peaks: (number[] | Float32Array)[],
+    ctx: CanvasRenderingContext2D
+  ) => {
+    const { width, height } = ctx.canvas;
+    ctx.clearRect(0, 0, width, height);
+
+    const channel = peaks[0];
+    const length = channel.length;
+    const barWidth = width / length;
+    const totalDuration = rawAudioDuration;
+
+    // Calculate region positions in pixels
+    const regionStartPixel = (region.value[0] / totalDuration) * width;
+    const regionEndPixel = (region.value[1] / totalDuration) * width;
+    const regionWidth = regionEndPixel - regionStartPixel;
+
+    // Calculate fade areas in pixels relative to the region
+    const fadeInPixels = fadeInEnabled.value
+      ? (fadeInDuration.value / totalDuration) * width
+      : 0;
+    const fadeOutPixels = fadeOutEnabled.value
+      ? (fadeOutDuration.value / totalDuration) * width
+      : 0;
+
+    // Fade in starts at region start
+    const fadeInEndPixel = regionStartPixel + fadeInPixels;
+    // Fade out ends at region end
+    const fadeOutStartPixel = regionEndPixel - fadeOutPixels;
+
+    for (let i = 0; i < length; i++) {
+      const x = i * barWidth;
+      const sample = Math.abs(channel[i]);
+      const barHeight = sample * height;
+
+      // Calculate fade multiplier for bar height
+      let fadeMultiplier = 1;
+      let color = "#10b981"; // Default green
+
+      // Apply fade in effect (from region start)
+      if (fadeInEnabled.value && x >= regionStartPixel && x <= fadeInEndPixel) {
+        const fadeProgress = (x - regionStartPixel) / fadeInPixels;
+        fadeMultiplier = Math.max(0.1, fadeProgress);
+      }
+
+      // Apply fade out effect (to region end)
+      if (fadeOutEnabled.value && x >= fadeOutStartPixel && x <= regionEndPixel) {
+        const fadeProgress = (x - fadeOutStartPixel) / fadeOutPixels;
+        fadeMultiplier = Math.min(fadeMultiplier, Math.max(0.1, 1 - fadeProgress));
+      }
+
+      // Apply fade to bar height
+      const fadedBarHeight = barHeight * fadeMultiplier;
+      const fadedY = (height - fadedBarHeight) / 2;
+
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = color;
+      ctx.fillRect(x, fadedY, Math.max(1, barWidth), fadedBarHeight);
+    }
+
+    ctx.globalAlpha = 1;
+  };
+
   const initializeWaveSurfer = async () => {
     await nextTick();
 
@@ -41,6 +111,7 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
       cursorWidth: 0,
       height: 100,
       fillParent: true,
+      renderFunction: customRenderer,
       plugins: [
         regionsPlugin.value,
         TimelinePlugin.create({
@@ -81,7 +152,7 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
 
     wavesurfer.value.on("timeupdate", (time: number) => {
       currentTime.value = time;
-      
+
       // Stop playback if we've reached the region end
       if (isPlaying.value && time >= region.value[1]) {
         wavesurfer.value.pause();
@@ -121,6 +192,13 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
       wavesurfer.value?.play(updatedRegion.start, updatedRegion.end);
     }
     region.value = [updatedRegion.start, updatedRegion.end];
+    
+    // Redraw waveform if fade effects are enabled to update their positions
+    if ((fadeInEnabled.value || fadeOutEnabled.value) && wavesurfer.value && !isLoading.value) {
+      wavesurfer.value.setOptions({
+        renderFunction: customRenderer,
+      });
+    }
   };
 
   const handlePlayPause = async () => {
@@ -136,9 +214,11 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
         // If current time is before region start or after region end, seek to region start
         const currentPos = wavesurfer.value.getCurrentTime();
         if (currentPos < region.value[0] || currentPos >= region.value[1]) {
-          wavesurfer.value.seekTo(region.value[0] / wavesurfer.value.getDuration());
+          wavesurfer.value.seekTo(
+            region.value[0] / wavesurfer.value.getDuration()
+          );
         }
-        
+
         // Play from current position to region end
         const playPromise = wavesurfer.value.play(undefined, region.value[1]);
         if (playPromise && typeof playPromise.catch === "function") {
@@ -204,13 +284,39 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
   };
 
   const setEndTime = (time: number) => {
-    const newEnd = Math.max(region.value[0] + 0.1, Math.min(time, rawAudioDuration));
+    const newEnd = Math.max(
+      region.value[0] + 0.1,
+      Math.min(time, rawAudioDuration)
+    );
     const regions = regionsPlugin.value.getRegions();
     if (regions.length > 0) {
       const r = regions[0];
       r.setOptions({ start: region.value[0], end: newEnd });
     }
     updateExportRegion({ start: region.value[0], end: newEnd });
+  };
+
+  // Fade effect functions
+  const updateFadeIn = (enabled: boolean, duration: number = 1.0) => {
+    fadeInEnabled.value = enabled;
+    fadeInDuration.value = duration;
+    if (wavesurfer.value && !isLoading.value) {
+      // Use setOptions to trigger redraw with updated renderer
+      wavesurfer.value.setOptions({
+        renderFunction: customRenderer,
+      });
+    }
+  };
+
+  const updateFadeOut = (enabled: boolean, duration: number = 1.0) => {
+    fadeOutEnabled.value = enabled;
+    fadeOutDuration.value = duration;
+    if (wavesurfer.value && !isLoading.value) {
+      // Use setOptions to trigger redraw with updated renderer
+      wavesurfer.value.setOptions({
+        renderFunction: customRenderer,
+      });
+    }
   };
 
   const resetRegion = () => {
@@ -264,5 +370,9 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
     setStartTime,
     setEndTime,
     resetRegion,
+    updateFadeIn,
+    updateFadeOut,
+    fadeInEnabled,
+    fadeOutEnabled,
   };
 }
