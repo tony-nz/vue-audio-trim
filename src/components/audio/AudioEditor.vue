@@ -31,6 +31,7 @@
           :region="region"
           :cursor-position="cursorPosition"
           :cursor-time="cursorTime"
+          :current-time="currentTime"
           :wavesurfer="wavesurfer"
           :is-loading="isLoading"
           @format-time="formatTime"

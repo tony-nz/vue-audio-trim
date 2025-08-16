@@ -37,8 +37,8 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
       normalize: true,
       backend: "WebAudio",
       interact: true,
-      cursorColor: "red",
-      cursorWidth: 4,
+      cursorColor: "transparent",
+      cursorWidth: 0,
       height: 100,
       fillParent: true,
       plugins: [
