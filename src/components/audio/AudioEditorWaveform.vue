@@ -1,6 +1,6 @@
 <template>
-  <div class="waveform-container rounded p-4 mb-6">
-    <div class="relative">
+  <div class="waveform-container rounded p-4 mb-6 overflow-visible">
+    <div class="relative overflow-visible">
       <!-- Loading Spinner Overlay -->
       <div
         v-if="isLoading"
@@ -17,9 +17,9 @@
         <span>{{ formatTime(region[0]) }}</span>
         <span>{{ formatTime(region[1]) }}</span>
       </div>
-      <div class="relative">
+      <div class="relative px-4">
         <div id="waveform" class="relative"></div>
-        <div ref="timelineRef" id="wave-timeline" />
+        <div ref="timelineRef" id="wave-timeline" class="mt-4" />
 
         <!-- Dark overlays for excluded areas -->
         <div
@@ -95,77 +95,74 @@ defineProps<{
 #waveform ::part(region-region) {
   background-color: rgba(96, 165, 250, 0.15) !important;
   border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 #waveform ::part(region-handle) {
   background-color: #60a5fa !important;
-  width: 15px !important;
+  width: 10px !important;
   cursor: ew-resize !important;
   top: 0 !important;
   bottom: 0 !important;
   border-radius: 0 !important;
-  opacity: 0.8 !important;
-}
-
-#waveform ::part(region-handle-start) {
-  left: 0 !important;
-  transform: translateX(-50%) !important;
-}
-
-#waveform ::part(region-handle-end) {
-  right: 0 !important;
-  transform: translateX(50%) !important;
+  opacity: 1 !important;
+  z-index: 10 !important;
 }
 
 #waveform ::part(region-handle-left) {
-  border-top-left-radius: 6px !important;
-  border-bottom-left-radius: 6px !important;
-  border-bottom-right-radius: 0 !important;
-  border-top-right-radius: 0 !important;
+  left: 0 !important;
+  transform: translateX(-100%) !important;
+  margin-left: -0px !important;
 }
 
 #waveform ::part(region-handle-right) {
-  border-top-right-radius: 6px !important;
-  border-bottom-right-radius: 6px !important;
-  border-bottom-left-radius: 0 !important;
-  border-top-left-radius: 0 !important;
-}
-
-#waveform ::part(region-handle)::after {
-  content: "";
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background-color: white;
-  border-radius: 50%;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 -12px 0 white, 0 12px 0 white;
-}
-
-#waveform :deep(.wavesurfer-cursor) {
-  position: relative;
-}
-
-#waveform :deep(.wavesurfer-cursor)::after {
-  content: attr(data-time);
-  position: absolute;
-  top: -25px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  color: red;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 11px;
-  white-space: nowrap;
-  pointer-events: none;
+  right: 0 !important;
+  transform: translateX(100%) !important;
+  margin-right: 0px !important;
 }
 #waveform ::part(canvases),
 #waveform ::part(progress) {
   display: flex;
   align-items: center;
   height: 200px;
+}
+
+/* Regions */
+#waveform ::part(region) {
+  box-sizing: border-box;
+}
+
+/* Region handles */
+#waveform ::part(region-handle) {
+  width: 10px !important;
+  max-width: 10px !important;
+  border: 1px solid #ddd;
+  background: rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+#waveform ::part(region-handle:before),
+#waveform ::part(region-handle:after) {
+  content: "";
+  display: block;
+  position: absolute;
+  z-index: 1;
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+  height: 4px;
+  left: 5%;
+  right: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#waveform ::part(region-handle:before) {
+  margin-top: -3px;
+}
+
+#waveform ::part(scroll) {
+  overflow-x: visible !important;
+  overflow-y: visible !important;
 }
 </style>

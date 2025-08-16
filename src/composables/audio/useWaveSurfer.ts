@@ -37,8 +37,8 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
       normalize: true,
       backend: "WebAudio",
       interact: true,
-      cursorColor: "white",
-      cursorWidth: 8,
+      cursorColor: "red",
+      cursorWidth: 4,
       height: 100,
       fillParent: true,
       plugins: [
@@ -179,6 +179,7 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
         color: "rgba(0, 0, 0, 0)",
         drag: true,
         resize: true,
+        width: 20,
       });
 
       newRegion.on("update-end", () => {

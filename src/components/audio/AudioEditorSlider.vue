@@ -13,7 +13,7 @@
   </div>
 
   <div v-else class="flex items-center gap-4">
-    <div v-if="label" class="flex justify-end items-center">
+    <div v-if="label" class="flex justify-end items-center text-nowrap">
       {{ label }}
     </div>
     <div class="flex gap-3 items-center w-full">
@@ -21,7 +21,7 @@
         :model-value="modelValue"
         :min="min"
         :max="max"
-        class="flex-1"
+        class="flex-1 text-red-500"
         v-bind="$attrs"
         @update:model-value="$emit('update:model-value', $event)"
       />

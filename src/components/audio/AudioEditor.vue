@@ -261,16 +261,20 @@ onMounted(() => {
 #waveform ::part(region-region) {
   background-color: rgba(96, 165, 250, 0.15) !important;
   border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 #waveform ::part(region-handle) {
   background-color: #60a5fa !important;
-  width: 15px !important;
+  width: 3px !important;
   cursor: ew-resize !important;
   top: 0 !important;
   bottom: 0 !important;
   border-radius: 0 !important;
-  opacity: 0.8 !important;
+  opacity: 1 !important;
+  z-index: 10 !important;
+  box-shadow: 0 0 0 8px rgba(96, 165, 250, 0.2) !important;
 }
 
 #waveform ::part(region-handle-start) {

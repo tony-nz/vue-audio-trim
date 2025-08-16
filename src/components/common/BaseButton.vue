@@ -45,7 +45,7 @@ export default defineComponent({
     },
     color: {
       type: String,
-      default: "primary",
+      default: "info",
     },
     size: {
       type: String,
