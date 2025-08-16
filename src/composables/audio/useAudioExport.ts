@@ -149,7 +149,11 @@ export function useAudioExport() {
       const url = URL.createObjectURL(mp3Blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${fileName.replace(/\.[^/.]+$/, "")}_edited.mp3`;
+      // Use the custom filename as-is, just ensure it has .mp3 extension
+      const downloadName = fileName.endsWith('.mp3') 
+        ? fileName 
+        : `${fileName.replace(/\.[^/.]+$/, "")}.mp3`;
+      link.download = downloadName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

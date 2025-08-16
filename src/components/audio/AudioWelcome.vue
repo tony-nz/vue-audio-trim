@@ -269,7 +269,7 @@
             </div>
             <h3 class="text-2xl font-bold mb-4">Easy Export</h3>
             <p class="text-gray-400">
-              Export your edited audio in multiple formats with one click
+              Export your edited audio in mp3 format, with one click
             </p>
           </div>
 

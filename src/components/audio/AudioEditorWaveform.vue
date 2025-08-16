@@ -49,7 +49,7 @@
             ></div>
           </div>
         </div>
-        <div ref="timelineRef" id="wave-timeline" class="mt-10" />
+        <div ref="timelineRef" id="wave-timeline" class="mt-10 bg-slate-800" />
 
         <!-- Region handle time labels -->
         <div v-if="wavesurfer && region">

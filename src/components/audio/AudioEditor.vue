@@ -14,7 +14,7 @@
       />
 
       <!-- Main Player Area -->
-      <div class="p-6">
+      <div class="p-6 relative">
         <!-- Waveform Area -->
         <AudioEditorWaveform
           :region="region"
@@ -24,6 +24,15 @@
           :wavesurfer="wavesurfer"
           :is-loading="isLoading"
           @format-time="formatTime"
+        />
+
+        <!-- Settings Overlay -->
+        <AudioEditorSettingsOverlay
+          :is-open="isSettingsOpen"
+          :fade-in-duration="waveSurferFadeInDuration"
+          :fade-out-duration="waveSurferFadeOutDuration"
+          @close="isSettingsOpen = false"
+          @apply-fade-settings="applyFadeSettings"
         />
 
         <!-- Effects Panel -->
@@ -73,11 +82,8 @@
     <AudioEditorDialogs
       :dialog="dialog"
       :is-tempo-loading="isTempoLoading"
-      :fade-in-duration="waveSurferFadeInDuration"
-      :fade-out-duration="waveSurferFadeOutDuration"
       @close="dialog.close"
       @confirm-close="$emit('close')"
-      @apply-fade-settings="applyFadeSettings"
     />
   </div>
 </template>
@@ -97,6 +103,7 @@ import AudioEditorWaveform from "./AudioEditorWaveform.vue";
 import AudioEditorEffectsPanel from "./AudioEditorEffectsPanel.vue";
 import AudioEditorControls from "./AudioEditorControls.vue";
 import AudioEditorDialogs from "./AudioEditorDialogs.vue";
+import AudioEditorSettingsOverlay from "./AudioEditorSettingsOverlay.vue";
 
 interface Props {
   rawAudio: File;
@@ -192,22 +199,27 @@ const showCloseAudioDialog = () => {
   dialog.open("closeConfirm");
 };
 
+const isSettingsOpen = ref(false);
+
 const openFadeSettings = () => {
   wavesurfer.value?.pause();
-  dialog.open("fadeSettings");
+  isSettingsOpen.value = true;
 };
 
-const applyFadeSettings = (newFadeInDuration: number, newFadeOutDuration: number) => {
+const applyFadeSettings = (
+  newFadeInDuration: number,
+  newFadeOutDuration: number
+) => {
   // Update both composables' fade durations
   fadeInDuration.value = newFadeInDuration;
   fadeOutDuration.value = newFadeOutDuration;
   waveSurferFadeInDuration.value = newFadeInDuration;
   waveSurferFadeOutDuration.value = newFadeOutDuration;
-  
+
   // Update waveform visualization
   updateFadeIn(fadeInEnabled.value, newFadeInDuration);
   updateFadeOut(fadeOutEnabled.value, newFadeOutDuration);
-  
+
   // Update envelope points for export
   updateEnvelopePoints(
     wavesurfer.value,
@@ -217,8 +229,8 @@ const applyFadeSettings = (newFadeInDuration: number, newFadeOutDuration: number
     fadeOutEnabled.value,
     newFadeOutDuration
   );
-  
-  dialog.close();
+
+  isSettingsOpen.value = false;
 };
 
 const applyEqPreset = (presetValues: number[]) => {
@@ -283,7 +295,7 @@ watch([fadeInDuration, fadeOutDuration], () => {
     fadeOutEnabled.value,
     fadeOutDuration.value
   );
-  
+
   // Update waveform visualization when fade durations change
   updateFadeIn(fadeInEnabled.value, fadeInDuration.value);
   updateFadeOut(fadeOutEnabled.value, fadeOutDuration.value);
@@ -405,64 +417,6 @@ onMounted(() => {
   font-size: 11px;
   white-space: nowrap;
   pointer-events: none;
-}
-
-/* Custom select styling is now handled inline with Tailwind classes */
-
-.fade-slider::-webkit-slider-track {
-  background: #475569;
-  height: 4px;
-  border-radius: 2px;
-}
-
-.fade-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  background: red;
-  border-radius: 50%;
-  cursor: pointer;
-  margin-top: -4px;
-}
-
-.fade-slider::-moz-range-track {
-  background: #475569;
-  height: 4px;
-  border-radius: 2px;
-}
-
-.fade-slider::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
-  background: red;
-  border-radius: 50%;
-  cursor: pointer;
-  border: none;
-}
-
-.slider-container :deep(input[type="range"]) {
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-  cursor: pointer;
-}
-
-.slider-container :deep(input[type="range"]::-webkit-slider-track) {
-  background: #334155;
-  height: 4px;
-  border-radius: 2px;
-}
-
-.slider-container :deep(input[type="range"]::-webkit-slider-thumb) {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  background: red;
-  border-radius: 50%;
-  cursor: pointer;
-  margin-top: -6px;
 }
 
 #waveform ::part(canvases),
