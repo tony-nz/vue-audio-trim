@@ -40,9 +40,9 @@ export function useAudioEffects() {
 
   // Fade controls
   const fadeInEnabled = ref(false);
-  const fadeInDuration = ref(3.0);
+  const fadeInDuration = ref(3.0); // Default 3 seconds
   const fadeOutEnabled = ref(false);
-  const fadeOutDuration = ref(3.0);
+  const fadeOutDuration = ref(3.0); // Default 3 seconds
   const isTrimMode = ref(true);
 
   const setVolume = (wavesurfer: any, v = 100) => {

@@ -8,6 +8,7 @@
         :title="editableTitle"
         @select-action="selectAction"
         @update-title="(newTitle: string) => editableTitle = newTitle"
+        @open-fade-settings="openFadeSettings"
         @reset="resetAll"
         @close="showCloseAudioDialog"
       />
@@ -35,7 +36,7 @@
           :music-info="musicInfo"
           :bitrate="bitrate"
           :equalizer="equalizer"
-          @update-volume="setVolume"
+          @update-volume="handleVolumeUpdate"
           @update-exported-volume="(v: any) => (exportedVolume = v)"
           @update-speed="(value: number) => setSpeed(wavesurfer, value)"
           @update-bitrate="(v: any) => (bitrate = v)"
@@ -72,8 +73,11 @@
     <AudioEditorDialogs
       :dialog="dialog"
       :is-tempo-loading="isTempoLoading"
+      :fade-in-duration="waveSurferFadeInDuration"
+      :fade-out-duration="waveSurferFadeOutDuration"
       @close="dialog.close"
       @confirm-close="$emit('close')"
+      @apply-fade-settings="applyFadeSettings"
     />
   </div>
 </template>
@@ -132,6 +136,9 @@ const {
   resetRegion,
   updateFadeIn,
   updateFadeOut,
+  updateBaseVolume,
+  fadeInDuration: waveSurferFadeInDuration,
+  fadeOutDuration: waveSurferFadeOutDuration,
 } = useWaveSurfer(props.rawAudio, props.rawAudioDuration);
 
 const {
@@ -185,10 +192,44 @@ const showCloseAudioDialog = () => {
   dialog.open("closeConfirm");
 };
 
+const openFadeSettings = () => {
+  wavesurfer.value?.pause();
+  dialog.open("fadeSettings");
+};
+
+const applyFadeSettings = (newFadeInDuration: number, newFadeOutDuration: number) => {
+  // Update both composables' fade durations
+  fadeInDuration.value = newFadeInDuration;
+  fadeOutDuration.value = newFadeOutDuration;
+  waveSurferFadeInDuration.value = newFadeInDuration;
+  waveSurferFadeOutDuration.value = newFadeOutDuration;
+  
+  // Update waveform visualization
+  updateFadeIn(fadeInEnabled.value, newFadeInDuration);
+  updateFadeOut(fadeOutEnabled.value, newFadeOutDuration);
+  
+  // Update envelope points for export
+  updateEnvelopePoints(
+    wavesurfer.value,
+    region.value,
+    fadeInEnabled.value,
+    newFadeInDuration,
+    fadeOutEnabled.value,
+    newFadeOutDuration
+  );
+  
+  dialog.close();
+};
+
 const applyEqPreset = (presetValues: number[]) => {
   presetValues.forEach((value, index) => {
     updateEqualizer(value, index);
   });
+};
+
+const handleVolumeUpdate = (v: number) => {
+  setVolume(wavesurfer.value, v);
+  updateBaseVolume(v / 100); // Convert percentage to decimal for WaveSurfer
 };
 
 const handleToggleFadeIn = () => {
@@ -214,6 +255,8 @@ const resetAll = () => {
     fadeOutEnabled.value,
     fadeOutDuration.value
   );
+  // Reset base volume to 100%
+  updateBaseVolume(1.0);
 };
 
 const handleExport = () => {
@@ -265,7 +308,7 @@ watch(
 // Initialize envelope
 onMounted(() => {
   createEnvelopePlugin();
-  setVolume(wavesurfer.value, 100);
+  handleVolumeUpdate(100);
 
   // Initialize title with filename + suffix
   const baseName = props.rawAudio.name.replace(/\.[^/.]+$/, ""); // Remove extension

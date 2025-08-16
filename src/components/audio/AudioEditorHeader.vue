@@ -40,6 +40,14 @@
     <div class="flex items-center">
       <button
         class="text-gray-300 hover:text-white flex items-center p-2"
+        @click="$emit('open-fade-settings')"
+        title="Fade Settings"
+      >
+        <i class="fas fa-cog mr-2"></i>
+        <span>Fade Settings</span>
+      </button>
+      <button
+        class="text-gray-300 hover:text-white flex items-center p-2 ml-2"
         @click="$emit('reset')"
       >
         <i class="fas fa-undo mr-2"></i>
@@ -71,6 +79,7 @@ defineProps<{
 const emit = defineEmits<{
   "select-action": [key: string];
   "update-title": [title: string];
+  "open-fade-settings": [];
   reset: [];
   close: [];
 }>();

@@ -22,8 +22,43 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
   // Fade effect state
   const fadeInEnabled = ref(false);
   const fadeOutEnabled = ref(false);
-  const fadeInDuration = ref(1.0);
-  const fadeOutDuration = ref(1.0);
+  const fadeInDuration = ref(3.0); // Increased default from 1.0 to 3.0 seconds
+  const fadeOutDuration = ref(3.0); // Increased default from 1.0 to 3.0 seconds
+  const baseVolume = ref(1.0); // Store the base volume for fade calculations
+
+  // Calculate fade volume based on current time and fade settings
+  const calculateFadeVolume = (currentTime: number): number => {
+    // Only apply fade effects if we're within the selected region
+    if (currentTime < region.value[0] || currentTime > region.value[1]) {
+      return baseVolume.value;
+    }
+
+    let fadeMultiplier = 1.0;
+    const regionStart = region.value[0];
+    const regionEnd = region.value[1];
+
+    // Apply fade in effect
+    if (fadeInEnabled.value && currentTime >= regionStart) {
+      const fadeInEnd = regionStart + fadeInDuration.value;
+      if (currentTime <= fadeInEnd) {
+        const fadeProgress = (currentTime - regionStart) / fadeInDuration.value;
+        // Use exponential curve for natural fade
+        fadeMultiplier = Math.min(fadeMultiplier, 1 - Math.exp(-3 * fadeProgress));
+      }
+    }
+
+    // Apply fade out effect
+    if (fadeOutEnabled.value && currentTime <= regionEnd) {
+      const fadeOutStart = regionEnd - fadeOutDuration.value;
+      if (currentTime >= fadeOutStart) {
+        const fadeProgress = (currentTime - fadeOutStart) / fadeOutDuration.value;
+        // Use exponential curve for natural fade
+        fadeMultiplier = Math.min(fadeMultiplier, Math.exp(-3 * fadeProgress));
+      }
+    }
+
+    return baseVolume.value * Math.max(0, fadeMultiplier);
+  };
 
   // Custom renderer function for fade effects
   const customRenderer = (
@@ -151,6 +186,12 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
 
     wavesurfer.value.on("timeupdate", (time: number) => {
       currentTime.value = time;
+
+      // Apply real-time fade volume during playback
+      if (isPlaying.value) {
+        const fadeVolume = calculateFadeVolume(time);
+        wavesurfer.value.setVolume(fadeVolume);
+      }
 
       // Stop playback if we've reached the region end
       if (isPlaying.value && time >= region.value[1]) {
@@ -295,6 +336,15 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
     updateExportRegion({ start: region.value[0], end: newEnd });
   };
 
+  // Update base volume when volume changes
+  const updateBaseVolume = (volume: number) => {
+    baseVolume.value = volume;
+    // If not playing, apply volume immediately
+    if (!isPlaying.value && wavesurfer.value) {
+      wavesurfer.value.setVolume(volume);
+    }
+  };
+
   // Fade effect functions
   const updateFadeIn = (enabled: boolean, duration: number = 1.0) => {
     fadeInEnabled.value = enabled;
@@ -304,6 +354,12 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
       wavesurfer.value.setOptions({
         renderFunction: customRenderer,
       });
+      
+      // If playing, update volume immediately with fade calculation
+      if (isPlaying.value) {
+        const fadeVolume = calculateFadeVolume(currentTime.value);
+        wavesurfer.value.setVolume(fadeVolume);
+      }
     }
   };
 
@@ -315,6 +371,12 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
       wavesurfer.value.setOptions({
         renderFunction: customRenderer,
       });
+      
+      // If playing, update volume immediately with fade calculation
+      if (isPlaying.value) {
+        const fadeVolume = calculateFadeVolume(currentTime.value);
+        wavesurfer.value.setVolume(fadeVolume);
+      }
     }
   };
 
@@ -371,7 +433,10 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
     resetRegion,
     updateFadeIn,
     updateFadeOut,
+    updateBaseVolume,
     fadeInEnabled,
     fadeOutEnabled,
+    fadeInDuration,
+    fadeOutDuration,
   };
 }
