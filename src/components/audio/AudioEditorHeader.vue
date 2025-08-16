@@ -44,7 +44,6 @@
         title="Fade Settings"
       >
         <i class="fas fa-cog mr-2"></i>
-        <span>Fade Settings</span>
       </button>
       <button
         class="text-gray-300 hover:text-white flex items-center p-2 ml-2"

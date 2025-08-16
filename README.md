@@ -1,6 +1,8 @@
 # VueAudioTrim
 
-A lightweight, open-source Vue.js component library for precise audio trimming, built on WaveSurfer.js. VueAudioTrim enables developers to seamlessly integrate intuitive audio editing into their projects. With millisecond-precision trimming, customizable fade effects, real-time volume control, tempo and BPM adjustments without pitch distortion, and multi-format export, it’s designed for efficiency and flexibility. Its real-time visual waveform interface empowers developers to create polished audio applications with ease, no prior audio expertise required.This description targets developers unfamiliar with WaveSurfer.js, emphasizing the trimming focus, key features (precision trimming, fade effects, volume control, BPM adjustment, easy export), and the Vue framework’s integration. It’s concise, highlights the tool’s accessibility, and positions it as a developer-friendly solution. Let me know if you want to adjust the tone, length, or add specific details!
+A modern, lightweight Vue.js audio editor built with TypeScript and WaveSurfer.js. VueAudioTrim provides an intuitive interface for precise audio trimming, real-time fade effects, volume control, and multi-format export - all running entirely in the browser.
+
+![VueAudioTrim Screenshot](screenshot.png)
 
 ![VueAudioTrim](https://img.shields.io/badge/Vue-3.x-4FC08D?style=flat-square&logo=vue.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)
@@ -9,30 +11,16 @@ A lightweight, open-source Vue.js component library for precise audio trimming, 
 
 ## ✨ Features
 
-### Core Audio Editing
-
-- **Precision Cutting**: Cut and trim audio with millisecond precision using visual waveform editing
-- **Fade Effects**: Apply smooth fade in/out effects with customizable exponential curves
-- **Volume Control**: Adjust volume levels with precision mixing controls and real-time preview
-- **BPM Adjustment**: Change tempo and BPM without affecting pitch quality using advanced algorithms
-- **Equalizer**: 5-band equalizer with real-time frequency adjustment
-- **Multiple Export Formats**: Export to MP3, WAV, FLAC, and OGG formats
-
-### User Interface
-
-- **Beautiful Landing Page**: Professional gradient design with animated wave bars
-- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
-- **Real-time Waveform**: Visual representation of audio with region selection
-- **Loading States**: Elegant spinners for audio loading and export processing
-- **Dark Theme**: Modern dark interface optimized for long editing sessions
-
-### Technical Features
-
-- **Vue 3 Composition API**: Built with modern Vue.js patterns and TypeScript
-- **Modular Architecture**: Composables-based architecture for maintainability
-- **WaveSurfer.js Integration**: Advanced audio visualization and manipulation
-- **EnvelopePlugin**: Smooth fade curves using mathematical exponential functions
-- **Keyboard Shortcuts**: Space bar for play/pause, arrow keys for navigation
+- 🎵 **Precision Audio Trimming** - Cut and trim audio with millisecond accuracy using visual waveform editing
+- 🔄 **Real-time Fade Effects** - Apply smooth fade in/out with customizable durations (0.5-10 seconds)
+- 🎚️ **Live Audio Effects** - Volume control, speed adjustment, and 10-band equalizer with real-time preview
+- 📊 **Interactive Waveform** - Visual audio representation with draggable region selection
+- 🎛️ **BPM Detection & Tempo Control** - Automatic BPM detection with pitch-preserving tempo adjustment
+- 💾 **Multi-format Export** - Export to MP3 with customizable bitrate settings
+- ⌨️ **Keyboard Shortcuts** - Space for play/pause, arrow keys for navigation
+- 🌙 **Modern Dark UI** - Sleek interface optimized for long editing sessions
+- 📱 **Fully Responsive** - Works seamlessly across desktop, tablet, and mobile devices
+- 🚀 **Browser-based** - No installation required, runs entirely in your browser
 
 ## 🚀 Quick Start
 
@@ -65,173 +53,54 @@ npm run build
 npm run preview
 ```
 
-## 🏗️ Architecture
+## 🏗️ Tech Stack
 
-### Project Structure
+**Frontend Framework**
+- Vue 3 with Composition API & TypeScript
+- Vite for fast development and building
 
-```
-src/
-├── components/
-│   ├── audio/
-│   │   ├── AudioEditor.vue          # Main editor orchestrator
-│   │   ├── AudioEditorHeader.vue    # Top controls and actions
-│   │   ├── AudioEditorWaveform.vue  # Waveform display with overlays
-│   │   ├── AudioEditorControls.vue  # Bottom playback controls
-│   │   ├── AudioEditorEffectsPanel.vue  # Effects control panel
-│   │   ├── AudioEditorDialogs.vue   # Modal dialogs
-│   │   └── AudioWelcome.vue         # Landing page with editor
-│   └── common/
-│       ├── CommonUploader.vue       # File upload component
-│       └── BaseButton.vue          # Reusable button component
-├── composables/
-│   ├── audio/
-│   │   ├── useWaveSurfer.ts        # WaveSurfer management
-│   │   ├── useAudioEffects.ts      # Volume, speed, EQ effects
-│   │   ├── useAudioExport.ts       # Audio processing and export
-│   │   ├── useEnvelope.ts          # Fade curve calculations
-│   │   └── useMusicTempo.ts        # BPM detection and adjustment
-│   └── common/
-│       └── useDialog.ts            # Modal dialog management
-├── utils/
-│   └── audioUtils.ts               # Utility functions
-└── App.vue                         # Root component
-```
+**Audio Processing**
+- WaveSurfer.js for waveform visualization and playback
+- lamejs for MP3 encoding
+- music-tempo for BPM detection
 
-### Key Composables
+**Styling & UI**
+- Tailwind CSS for responsive design
+- Font Awesome for icons
+- Custom dark theme optimized for audio editing
 
-#### `useWaveSurfer.ts`
+## 🎛️ How to Use
 
-Manages WaveSurfer instance, region selection, and playback controls.
+### Quick Start Guide
 
-```typescript
-export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
-  const wavesurfer = ref<any>(null);
-  const isLoading = ref(true);
-  const region = ref([0, rawAudioDuration]);
-  // ... implementation
-}
-```
-
-#### `useAudioEffects.ts`
-
-Handles all audio effects including volume, speed, equalizer, and fade controls.
-
-```typescript
-export function useAudioEffects() {
-  const volume = ref(100);
-  const speed = ref(100);
-  const fadeInEnabled = ref(false);
-  const fadeOutEnabled = ref(false);
-  // ... implementation
-}
-```
-
-#### `useEnvelope.ts`
-
-Manages the WaveSurfer EnvelopePlugin for smooth fade curves.
-
-```typescript
-export function useEnvelope() {
-  const envelopePlugin = ref<any>(null);
-
-  const updateEnvelopePoints = (wavesurfer, region, fadeIn, fadeOut) => {
-    // Exponential fade curve calculations
-    const fadeInCurve = Array.from({ length: 50 }, (_, i) => {
-      const t = i / 49;
-      return Math.exp(4 * t - 4); // Exponential curve
-    });
-  };
-}
-```
-
-## 🎛️ Usage Guide
-
-### Basic Audio Editing
-
-1. **Upload Audio**: Click "Upload Audio File" and select your audio file
-2. **Set Region**: Drag the blue handles on the waveform to select the region to keep
-3. **Apply Effects**: Use the top toolbar to adjust volume, speed, or equalizer
-4. **Add Fades**: Click the fade in/out buttons in the bottom controls
-5. **Export**: Choose your format and click "Save" to download
+1. **📁 Upload Audio** - Click "Upload Audio File" and select your audio file (MP3, WAV, etc.)
+2. **✂️ Select Region** - Drag the blue handles on the waveform to choose what to keep
+3. **🎚️ Adjust Effects** - Use the toolbar buttons to modify volume, speed, or equalizer
+4. **🔄 Add Fades** - Enable fade in/out and customize durations via the Fade Settings (⚙️) button
+5. **💾 Export** - Click "Save" to download your edited audio as MP3
 
 ### Keyboard Shortcuts
 
-- `Space`: Play/Pause audio
-- `←/→`: Seek backward/forward
-- `Esc`: Reset all effects
+- `Space` - Play/Pause audio
+- `←/→` - Navigate through the timeline
+- `Esc` - Reset all effects and settings
 
-### Advanced Features
+### Pro Tips
 
-#### Fade Curves
-
-The editor uses exponential fade curves for natural-sounding fades:
-
-```typescript
-// Fade in curve (exponential growth)
-const fadeInVolume = Math.exp(4 * progress - 4);
-
-// Fade out curve (exponential decay)
-const fadeOutVolume = Math.exp(-4 * progress);
-```
-
-#### BPM Detection
-
-Uses advanced audio analysis to detect BPM and allow tempo changes:
-
-```typescript
-const musicInfo = await decodeAndSetMusicInfo(audioFile);
-setSpeed(wavesurfer, (newBPM / originalBPM) * 100);
-```
+- **Fade Settings**: Click the ⚙️ button in the header to customize fade durations from 0.5 to 10 seconds
+- **Precision Editing**: Use the time inputs for exact start/end times down to milliseconds
+- **Real-time Preview**: All effects are applied in real-time during playback
+- **BPM Adjustment**: Click the Speed button to auto-detect BPM and adjust tempo without pitch changes
 
 ## 🛠️ Development
 
-### Code Style
+Built with Vue 3 Composition API and TypeScript using a modular composables architecture. The codebase is organized into reusable components and composables that handle specific audio editing functionality.
 
-- **Vue 3 Composition API**: All components use `<script setup>` syntax
-- **TypeScript**: Strict typing throughout the codebase
-- **ESLint + Prettier**: Automated code formatting and linting
-- **Composables Pattern**: Business logic separated into reusable composables
+### Key Architecture Decisions
 
-### Adding New Effects
-
-1. Create a new composable in `src/composables/audio/`
-2. Export effect controls and apply functions
-3. Import and use in `AudioEditor.vue`
-4. Add UI controls in the appropriate component
-
-Example:
-
-```typescript
-// src/composables/audio/useReverb.ts
-export function useReverb() {
-  const reverbAmount = ref(0);
-
-  const applyReverb = (audioContext, audioBuffer) => {
-    // Reverb implementation
-  };
-
-  return { reverbAmount, applyReverb };
-}
-```
-
-## 📦 Dependencies
-
-### Core Dependencies
-
-- **Vue 3**: Progressive JavaScript framework
-- **TypeScript**: Static type checking
-- **WaveSurfer.js**: Audio visualization and manipulation
-- **Vite**: Fast build tool and dev server
-
-### Audio Processing
-
-- **lamejs**: MP3 encoding in the browser
-- **music-tempo**: BPM detection library
-
-### UI/Styling
-
-- **Tailwind CSS**: Utility-first CSS framework
-- **Font Awesome**: Icon library
+- **Composables Pattern**: Business logic separated into reusable composables (`useWaveSurfer`, `useAudioEffects`, etc.)
+- **Real-time Processing**: All effects are applied during playback for immediate feedback
+- **Browser-first**: Designed to run entirely in the browser without server dependencies
 
 ## 🤝 Contributing
 
