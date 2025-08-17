@@ -119,10 +119,8 @@ defineEmits<{
 const dialog = useDialog();
 const { isTempoLoading, musicInfo, decodeAndSetMusicInfo } = useMusicTempo();
 const {
-  envelopePlugin,
   createEnvelopePlugin,
   updateEnvelopePoints,
-  getEnvelopeVolumeAtTime,
 } = useEnvelope();
 const { isExporting, exportAudio } = useInstantExport();
 const exportFormat = ref("mp3");

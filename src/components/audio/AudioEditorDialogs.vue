@@ -29,12 +29,12 @@
 <script setup lang="ts">
 import BaseDialog from "../common/BaseDialog.vue";
 
-const props = defineProps<{
+defineProps<{
   dialog: any;
   isTempoLoading: boolean;
 }>();
 
-const emit = defineEmits<{
+defineEmits<{
   close: [];
   "confirm-close": [];
 }>();

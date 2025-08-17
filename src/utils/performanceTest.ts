@@ -38,7 +38,7 @@ export class PerformanceTest {
   
   report() {
     console.log("=== Performance Report ===");
-    for (const [label, time] of this.marks) {
+    for (const [label] of this.marks) {
       console.log(`${label}: Started but not ended`);
     }
   }

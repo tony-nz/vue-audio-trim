@@ -65,7 +65,7 @@ export function useInstantExport() {
 
     } catch (error) {
       console.error("❌ Export failed:", error);
-      alert(`Export failed: ${error.message}`);
+      alert(`Export failed: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       isExporting.value = false;
       perfTest.report();
@@ -94,7 +94,7 @@ export function useInstantExport() {
         throw new Error("lamejs not available");
       }
     } catch (e) {
-      throw new Error(`MP3 encoder init failed: ${e.message}`);
+      throw new Error(`MP3 encoder init failed: ${e instanceof Error ? e.message : String(e)}`);
     }
     perfTest.end("MP3_INIT");
 
