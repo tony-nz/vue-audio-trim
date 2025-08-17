@@ -235,7 +235,7 @@ const startAdjusting = (type: "start" | "end", delta: number) => {
     clearInterval(adjustmentInterval);
   }
 
-  // Start continuous adjustment after a delay
+  // Start continuous adjustment immediately with faster interval
   adjustmentInterval = setTimeout(() => {
     adjustmentInterval = setInterval(() => {
       if (type === "start") {
@@ -243,8 +243,8 @@ const startAdjusting = (type: "start" | "end", delta: number) => {
       } else {
         emit("adjust-end-time", delta);
       }
-    }, 100) as unknown as number;
-  }, 300) as unknown as number;
+    }, 50) as unknown as number; // Much faster - 50ms instead of 100ms
+  }, 150) as unknown as number; // Shorter delay - 150ms instead of 300ms
 };
 
 const stopAdjusting = () => {
