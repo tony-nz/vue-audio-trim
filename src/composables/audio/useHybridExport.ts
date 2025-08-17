@@ -24,7 +24,6 @@ export function useHybridExport() {
     exportedVolume: number,
     equalizer: EqItem[],
     envelopePlugin: any,
-    getEnvelopeVolumeAtTime: (time: number) => number,
     bitrate: number,
     customFilename?: string,
     format: string = "wav"

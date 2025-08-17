@@ -50,7 +50,6 @@
         @click="$emit('reset')"
       >
         <i class="fas fa-undo mr-2"></i>
-        <span>Reset</span>
       </button>
       <button
         class="text-gray-300 hover:text-white p-2 ml-2"

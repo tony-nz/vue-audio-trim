@@ -35,6 +35,23 @@
           @apply-fade-settings="applyFadeSettings"
         />
 
+        <!-- Export Overlay -->
+        <ExportOverlay
+          :is-visible="isExporting || isBackgroundProcessing"
+          :is-exporting="isExporting"
+          :is-background-processing="isBackgroundProcessing"
+          :background-progress="backgroundProgress"
+          :format="exportFormat"
+        />
+
+        <!-- Fade Feedback Overlay -->
+        <FadeOverlay
+          :is-visible="showFadeOverlay"
+          :fade-type="fadeOverlayType"
+          :is-enabled="fadeOverlayEnabled"
+          :duration="fadeOverlayDuration"
+        />
+
         <!-- Effects Panel -->
         <AudioEditorEffectsPanel
           v-if="selectedAction"
@@ -104,6 +121,8 @@ import AudioEditorEffectsPanel from "./AudioEditorEffectsPanel.vue";
 import AudioEditorControls from "./AudioEditorControls.vue";
 import AudioEditorDialogs from "./AudioEditorDialogs.vue";
 import AudioEditorSettingsOverlay from "./AudioEditorSettingsOverlay.vue";
+import ExportOverlay from "../common/ExportOverlay.vue";
+import FadeOverlay from "../common/FadeOverlay.vue";
 
 interface Props {
   rawAudio: File;
@@ -119,14 +138,19 @@ defineEmits<{
 const dialog = useDialog();
 const { isTempoLoading, musicInfo, decodeAndSetMusicInfo } = useMusicTempo();
 const {
-  envelopePlugin,
   createEnvelopePlugin,
   updateEnvelopePoints,
-  getEnvelopeVolumeAtTime,
 } = useEnvelope();
 const { isExporting, isBackgroundProcessing, backgroundProgress, exportAudio } =
   useHybridExport();
 const exportFormat = ref("wav");
+
+// Fade overlay state
+const showFadeOverlay = ref(false);
+const fadeOverlayType = ref<'in' | 'out' | 'settings' | null>(null);
+const fadeOverlayEnabled = ref(false);
+const fadeOverlayDuration = ref(0);
+let fadeOverlayTimeout: number | null = null;
 
 const {
   wavesurfer,
@@ -232,6 +256,9 @@ const applyFadeSettings = (
     newFadeOutDuration
   );
 
+  // Show fade settings overlay feedback
+  showFadeOverlayFeedback('settings', true, 0);
+
   isSettingsOpen.value = false;
 };
 
@@ -252,6 +279,9 @@ const handleToggleFadeIn = () => {
   updateFadeIn(fadeInEnabled.value, fadeInDuration.value);
   // Update envelope with debounce
   debouncedUpdateEnvelope();
+  
+  // Show fade overlay feedback
+  showFadeOverlayFeedback('in', fadeInEnabled.value, fadeInDuration.value);
 };
 
 const handleToggleFadeOut = () => {
@@ -260,6 +290,9 @@ const handleToggleFadeOut = () => {
   updateFadeOut(fadeOutEnabled.value, fadeOutDuration.value);
   // Update envelope with debounce
   debouncedUpdateEnvelope();
+  
+  // Show fade overlay feedback
+  showFadeOverlayFeedback('out', fadeOutEnabled.value, fadeOutDuration.value);
 };
 
 const resetAll = () => {
@@ -288,7 +321,6 @@ const handleExport = () => {
     exportedVolume.value,
     equalizer.value,
     null,
-    () => 1,
     bitrate.value,
     editableTitle.value,
     exportFormat.value
@@ -314,6 +346,30 @@ const debouncedUpdateEnvelope = () => {
     );
     envelopeUpdateTimeout = null;
   }, 100) as unknown as number;
+};
+
+// Show fade overlay feedback
+const showFadeOverlayFeedback = (
+  type: 'in' | 'out' | 'settings',
+  enabled: boolean,
+  duration: number
+) => {
+  // Clear any existing timeout
+  if (fadeOverlayTimeout) {
+    clearTimeout(fadeOverlayTimeout);
+  }
+  
+  // Set overlay state
+  fadeOverlayType.value = type;
+  fadeOverlayEnabled.value = enabled;
+  fadeOverlayDuration.value = duration;
+  showFadeOverlay.value = true;
+  
+  // Auto-hide after 2 seconds
+  fadeOverlayTimeout = setTimeout(() => {
+    showFadeOverlay.value = false;
+    fadeOverlayTimeout = null;
+  }, 2000) as unknown as number;
 };
 
 // Watch for fade changes and region updates
@@ -356,6 +412,12 @@ onMounted(() => {
     if (envelopeUpdateTimeout) {
       clearTimeout(envelopeUpdateTimeout);
       envelopeUpdateTimeout = null;
+    }
+    
+    // Clear fade overlay timeout
+    if (fadeOverlayTimeout) {
+      clearTimeout(fadeOverlayTimeout);
+      fadeOverlayTimeout = null;
     }
 
     removeEventListener("keydown", keyHandler);

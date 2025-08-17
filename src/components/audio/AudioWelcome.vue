@@ -58,7 +58,7 @@
       </div>
 
       <div
-        class="bg-gray-800 rounded-2xl border border-gray-700 mx-auto max-w-4xl"
+        class="bg-gray-800 rounded-2xl border border-gray-700 mx-auto max-w-5xl"
       >
         <!-- Upload Interface -->
         <div v-if="!props.rawAudio" class="p-12 text-center">
