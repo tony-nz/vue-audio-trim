@@ -23,9 +23,10 @@ export function useAudioExport() {
     bitrate: number,
     customFilename?: string
   ) => {
+    let audioContext: AudioContext | null = null;
     try {
       isExporting.value = true;
-      const audioContext = new AudioContext();
+      audioContext = new AudioContext();
       const buffer = await new Response(rawAudio).arrayBuffer();
       const decodedData = await audioContext.decodeAudioData(buffer);
 
@@ -45,6 +46,20 @@ export function useAudioExport() {
 
       const chunkSize = 44100;
       const volumeMultiplier = exportedVolume / 100;
+      
+      // Pre-calculate envelope volumes for better performance
+      let envelopeCache: Float32Array | null = null;
+      if (envelopePlugin) {
+        // Create a cache of envelope values at lower resolution (100 samples per second)
+        const cacheResolution = 100; // samples per second
+        const cacheLength = Math.ceil(newLength / (decodedData.sampleRate / cacheResolution));
+        envelopeCache = new Float32Array(cacheLength);
+        
+        for (let i = 0; i < cacheLength; i++) {
+          const timePosition = startTime + (i / cacheResolution);
+          envelopeCache[i] = getEnvelopeVolumeAtTime(timePosition);
+        }
+      }
 
       for (let channel = 0; channel < decodedData.numberOfChannels; channel++) {
         const originalChannelData = decodedData.getChannelData(channel);
@@ -66,10 +81,19 @@ export function useAudioExport() {
               let sample =
                 originalChannelData[originalIndex] * volumeMultiplier;
 
-              if (envelopePlugin) {
-                const timePosition = startTime + (i / decodedData.sampleRate);
-                const envelopeVolume = getEnvelopeVolumeAtTime(timePosition);
-                sample *= envelopeVolume;
+              if (envelopeCache) {
+                // Use cached envelope value with linear interpolation
+                const cachePosition = (i / decodedData.sampleRate) * 100;
+                const cacheIndex = Math.floor(cachePosition);
+                const cacheFraction = cachePosition - cacheIndex;
+                
+                if (cacheIndex < envelopeCache.length - 1) {
+                  const envelopeVolume = envelopeCache[cacheIndex] * (1 - cacheFraction) + 
+                                         envelopeCache[cacheIndex + 1] * cacheFraction;
+                  sample *= envelopeVolume;
+                } else if (cacheIndex < envelopeCache.length) {
+                  sample *= envelopeCache[cacheIndex];
+                }
               }
 
               newChannelData[i] = sample;
@@ -96,6 +120,11 @@ export function useAudioExport() {
       console.error("Export failed:", error);
       alert("Export failed. Please try again.");
     } finally {
+      // Close AudioContext to free resources
+      if (audioContext) {
+        await audioContext.close();
+        audioContext = null;
+      }
       isExporting.value = false;
     }
   };

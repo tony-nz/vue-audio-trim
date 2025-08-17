@@ -92,7 +92,7 @@
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import { useWaveSurfer } from "../../composables/audio/useWaveSurfer";
 import { useAudioEffects } from "../../composables/audio/useAudioEffects";
-import { useAudioExport } from "../../composables/audio/useAudioExport";
+import { useInstantExport } from "../../composables/audio/useInstantExport";
 import { useEnvelope } from "../../composables/audio/useEnvelope";
 import { useMusicTempo } from "../../composables/audio/useMusicTempo";
 import { formatTime, handleKeyPress } from "../../utils/audioUtils";
@@ -124,7 +124,8 @@ const {
   updateEnvelopePoints,
   getEnvelopeVolumeAtTime,
 } = useEnvelope();
-const { exportFormat, isExporting, exportAudio } = useAudioExport();
+const { isExporting, exportAudio } = useInstantExport();
+const exportFormat = ref("mp3");
 
 const {
   wavesurfer,
@@ -248,12 +249,16 @@ const handleToggleFadeIn = () => {
   toggleFadeIn();
   // Update waveform visualization
   updateFadeIn(fadeInEnabled.value, fadeInDuration.value);
+  // Update envelope with debounce
+  debouncedUpdateEnvelope();
 };
 
 const handleToggleFadeOut = () => {
   toggleFadeOut();
   // Update waveform visualization
   updateFadeOut(fadeOutEnabled.value, fadeOutDuration.value);
+  // Update envelope with debounce
+  debouncedUpdateEnvelope();
 };
 
 const resetAll = () => {
@@ -272,29 +277,35 @@ const resetAll = () => {
 };
 
 const handleExport = () => {
-  exportAudio(
-    props.rawAudio,
-    region.value,
-    speed.value,
-    exportedVolume.value,
-    equalizer.value,
-    envelopePlugin.value,
-    getEnvelopeVolumeAtTime,
-    bitrate.value,
-    editableTitle.value
-  );
+  console.log("🚀 Starting INSTANT export test...");
+  exportAudio(wavesurfer.value, editableTitle.value);
+};
+
+// Debounce function for envelope updates
+let envelopeUpdateTimeout: number | null = null;
+
+const debouncedUpdateEnvelope = () => {
+  if (envelopeUpdateTimeout) {
+    clearTimeout(envelopeUpdateTimeout);
+  }
+  
+  envelopeUpdateTimeout = setTimeout(() => {
+    updateEnvelopePoints(
+      wavesurfer.value,
+      region.value,
+      fadeInEnabled.value,
+      fadeInDuration.value,
+      fadeOutEnabled.value,
+      fadeOutDuration.value
+    );
+    envelopeUpdateTimeout = null;
+  }, 100) as unknown as number;
 };
 
 // Watch for fade changes and region updates
 watch([fadeInDuration, fadeOutDuration], () => {
-  updateEnvelopePoints(
-    wavesurfer.value,
-    region.value,
-    fadeInEnabled.value,
-    fadeInDuration.value,
-    fadeOutEnabled.value,
-    fadeOutDuration.value
-  );
+  // Use debounced update for envelope
+  debouncedUpdateEnvelope();
 
   // Update waveform visualization when fade durations change
   updateFadeIn(fadeInEnabled.value, fadeInDuration.value);
@@ -305,14 +316,8 @@ watch([fadeInDuration, fadeOutDuration], () => {
 watch(
   region,
   () => {
-    updateEnvelopePoints(
-      wavesurfer.value,
-      region.value,
-      fadeInEnabled.value,
-      fadeInDuration.value,
-      fadeOutEnabled.value,
-      fadeOutDuration.value
-    );
+    // Use debounced update for envelope
+    debouncedUpdateEnvelope();
   },
   { deep: true }
 );
@@ -333,6 +338,12 @@ onMounted(() => {
   addEventListener("keydown", keyHandler);
 
   onBeforeUnmount(() => {
+    // Clear any pending envelope updates
+    if (envelopeUpdateTimeout) {
+      clearTimeout(envelopeUpdateTimeout);
+      envelopeUpdateTimeout = null;
+    }
+    
     removeEventListener("keydown", keyHandler);
   });
 });

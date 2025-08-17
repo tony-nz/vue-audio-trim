@@ -25,6 +25,13 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
   const fadeInDuration = ref(3.0); // Increased default from 1.0 to 3.0 seconds
   const fadeOutDuration = ref(3.0); // Increased default from 1.0 to 3.0 seconds
   const baseVolume = ref(1.0); // Store the base volume for fade calculations
+  
+  // Store redraw timeout to debounce redraws
+  let redrawTimeout: number | null = null;
+  
+  // Store mouse event listeners for cleanup
+  let mouseMoveHandler: ((e: MouseEvent) => void) | null = null;
+  let mouseLeaveHandler: (() => void) | null = null;
 
   // Calculate fade volume based on current time and fade settings
   const calculateFadeVolume = (currentTime: number): number => {
@@ -200,9 +207,10 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
       }
     });
 
-    // Mouse tracking
+    // Mouse tracking with stored handlers for cleanup
     const waveformEl = container as HTMLElement;
-    waveformEl.addEventListener("mousemove", (e: MouseEvent) => {
+    
+    mouseMoveHandler = (e: MouseEvent) => {
       const rect = waveformEl.getBoundingClientRect();
       const x = e.clientX - rect.left;
       cursorPosition.value = x;
@@ -210,11 +218,14 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
       const duration = wavesurfer.value.getDuration();
       const progress = x / rect.width;
       cursorTime.value = duration * progress;
-    });
-
-    waveformEl.addEventListener("mouseleave", () => {
+    };
+    
+    mouseLeaveHandler = () => {
       cursorPosition.value = -1;
-    });
+    };
+    
+    waveformEl.addEventListener("mousemove", mouseMoveHandler);
+    waveformEl.addEventListener("mouseleave", mouseLeaveHandler);
 
     wavesurfer.value.on("error", (error: any) => {
       console.error("WaveSurfer error:", error);
@@ -345,38 +356,48 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
     }
   };
 
+  // Debounced redraw function
+  const debouncedRedraw = () => {
+    if (redrawTimeout) {
+      clearTimeout(redrawTimeout);
+    }
+    
+    redrawTimeout = setTimeout(() => {
+      if (wavesurfer.value && !isLoading.value) {
+        wavesurfer.value.setOptions({
+          renderFunction: customRenderer,
+        });
+      }
+      redrawTimeout = null;
+    }, 50) as unknown as number; // Debounce for 50ms
+  };
+  
   // Fade effect functions
   const updateFadeIn = (enabled: boolean, duration: number = 1.0) => {
     fadeInEnabled.value = enabled;
     fadeInDuration.value = duration;
-    if (wavesurfer.value && !isLoading.value) {
-      // Use setOptions to trigger redraw with updated renderer
-      wavesurfer.value.setOptions({
-        renderFunction: customRenderer,
-      });
-      
-      // If playing, update volume immediately with fade calculation
-      if (isPlaying.value) {
-        const fadeVolume = calculateFadeVolume(currentTime.value);
-        wavesurfer.value.setVolume(fadeVolume);
-      }
+    
+    // Use debounced redraw instead of immediate
+    debouncedRedraw();
+    
+    // If playing, update volume immediately with fade calculation
+    if (isPlaying.value && wavesurfer.value) {
+      const fadeVolume = calculateFadeVolume(currentTime.value);
+      wavesurfer.value.setVolume(fadeVolume);
     }
   };
 
   const updateFadeOut = (enabled: boolean, duration: number = 1.0) => {
     fadeOutEnabled.value = enabled;
     fadeOutDuration.value = duration;
-    if (wavesurfer.value && !isLoading.value) {
-      // Use setOptions to trigger redraw with updated renderer
-      wavesurfer.value.setOptions({
-        renderFunction: customRenderer,
-      });
-      
-      // If playing, update volume immediately with fade calculation
-      if (isPlaying.value) {
-        const fadeVolume = calculateFadeVolume(currentTime.value);
-        wavesurfer.value.setVolume(fadeVolume);
-      }
+    
+    // Use debounced redraw instead of immediate
+    debouncedRedraw();
+    
+    // If playing, update volume immediately with fade calculation
+    if (isPlaying.value && wavesurfer.value) {
+      const fadeVolume = calculateFadeVolume(currentTime.value);
+      wavesurfer.value.setVolume(fadeVolume);
     }
   };
 
@@ -408,9 +429,34 @@ export function useWaveSurfer(rawAudio: File, rawAudioDuration: number) {
   onMounted(initializeWaveSurfer);
 
   onBeforeUnmount(() => {
+    // Clear any pending redraws
+    if (redrawTimeout) {
+      clearTimeout(redrawTimeout);
+      redrawTimeout = null;
+    }
+    
+    // Remove mouse event listeners
+    const waveformEl = document.querySelector("#waveform") as HTMLElement;
+    if (waveformEl) {
+      if (mouseMoveHandler) {
+        waveformEl.removeEventListener("mousemove", mouseMoveHandler);
+        mouseMoveHandler = null;
+      }
+      if (mouseLeaveHandler) {
+        waveformEl.removeEventListener("mouseleave", mouseLeaveHandler);
+        mouseLeaveHandler = null;
+      }
+    }
+    
+    // Destroy wavesurfer instance
     if (wavesurfer.value) {
       wavesurfer.value.destroy();
       wavesurfer.value = null;
+    }
+    
+    // Clear plugin reference
+    if (regionsPlugin.value) {
+      regionsPlugin.value = null;
     }
   });
 
