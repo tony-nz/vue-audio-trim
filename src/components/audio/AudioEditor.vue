@@ -92,7 +92,7 @@
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import { useWaveSurfer } from "../../composables/audio/useWaveSurfer";
 import { useAudioEffects } from "../../composables/audio/useAudioEffects";
-import { useInstantExport } from "../../composables/audio/useInstantExport";
+import { useHybridExport } from "../../composables/audio/useHybridExport";
 import { useEnvelope } from "../../composables/audio/useEnvelope";
 import { useMusicTempo } from "../../composables/audio/useMusicTempo";
 import { formatTime, handleKeyPress } from "../../utils/audioUtils";
@@ -119,11 +119,14 @@ defineEmits<{
 const dialog = useDialog();
 const { isTempoLoading, musicInfo, decodeAndSetMusicInfo } = useMusicTempo();
 const {
+  envelopePlugin,
   createEnvelopePlugin,
   updateEnvelopePoints,
+  getEnvelopeVolumeAtTime,
 } = useEnvelope();
-const { isExporting, exportAudio } = useInstantExport();
-const exportFormat = ref("mp3");
+const { isExporting, isBackgroundProcessing, backgroundProgress, exportAudio } =
+  useHybridExport();
+const exportFormat = ref("wav");
 
 const {
   wavesurfer,
@@ -275,8 +278,21 @@ const resetAll = () => {
 };
 
 const handleExport = () => {
-  console.log("🚀 Starting INSTANT export test...");
-  exportAudio(wavesurfer.value, editableTitle.value);
+  console.log(
+    `🚀 Starting ${exportFormat.value.toUpperCase()} export with all effects...`
+  );
+  exportAudio(
+    props.rawAudio,
+    region.value,
+    speed.value,
+    exportedVolume.value,
+    equalizer.value,
+    null,
+    () => 1,
+    bitrate.value,
+    editableTitle.value,
+    exportFormat.value
+  );
 };
 
 // Debounce function for envelope updates
@@ -286,7 +302,7 @@ const debouncedUpdateEnvelope = () => {
   if (envelopeUpdateTimeout) {
     clearTimeout(envelopeUpdateTimeout);
   }
-  
+
   envelopeUpdateTimeout = setTimeout(() => {
     updateEnvelopePoints(
       wavesurfer.value,
@@ -341,7 +357,7 @@ onMounted(() => {
       clearTimeout(envelopeUpdateTimeout);
       envelopeUpdateTimeout = null;
     }
-    
+
     removeEventListener("keydown", keyHandler);
   });
 });

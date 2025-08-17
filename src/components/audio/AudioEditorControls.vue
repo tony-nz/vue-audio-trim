@@ -171,6 +171,7 @@
           "
           class="appearance-none bg-dark-player-light border border-dark-player-border rounded-2xl text-white font-bold pl-8 pr-12 py-3 text-center cursor-pointer hover:bg-dark-player focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[120px]"
         >
+          <option value="wav">wav (instant)</option>
           <option value="mp3">mp3</option>
         </select>
         <!-- Custom arrow -->
